@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "992217384254",
+    "firebase_url": "https://gokissan.firebaseio.com",
+    "project_id": "gokissan",
+    "storage_bucket": "gokissan.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992217384254:android:b6e3439e063d3140",
+        "android_client_info": {
+          "package_name": "in.techmafiya.gokissan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "992217384254-8lmk249fpglmmjig5lfvphdnjium5732.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPFnaXqtLjLwCvtrT_BJ2D2A8mULyiOTM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:992217384254:android:acfb07e5029050a1",
+        "android_client_info": {
+          "package_name": "in.techmafiya.neversettlewallpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "992217384254-8lmk249fpglmmjig5lfvphdnjium5732.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPFnaXqtLjLwCvtrT_BJ2D2A8mULyiOTM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

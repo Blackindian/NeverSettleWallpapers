@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/promtImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/placeholder1" />
+
+    <ImageView
+        android:id="@+id/loadingImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY" />
+
+
+    <ImageView
+        android:id="@+id/setWallpaper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/promtImageView"
+        android:layout_weight="1"
+        android:background="#51ffffff"
+        android:clickable="true"
+        android:padding="15dp"
+        android:src="@drawable/ic_set_wallpaper" />
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/progressive_jpeg"
+        style="@style/drawee"
+        />
+
+
+</RelativeLayout>
+</android.support.v7.widget.CardView>
