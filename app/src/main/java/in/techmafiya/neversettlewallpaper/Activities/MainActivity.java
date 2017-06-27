@@ -3,6 +3,7 @@ package in.techmafiya.neversettlewallpaper.Activities;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.AlertDialog;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -55,6 +57,8 @@ import java.util.ArrayList;
 import at.favre.lib.dali.Dali;
 import at.favre.lib.dali.builder.live.LiveBlurWorker;
 import in.techmafiya.neversettlewallpaper.Adapter.ImageAdapter;
+import in.techmafiya.neversettlewallpaper.AndroidBmpUtil;
+import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseDataBaseCheck;
 import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseInfo;
 import in.techmafiya.neversettlewallpaper.Permission.MarshMallowPermission;
 import in.techmafiya.neversettlewallpaper.Models.ImageModel;
@@ -177,7 +181,9 @@ public class MainActivity extends AppCompatActivity {
 
                                 imageLoaded = true;
                                 bitmap = resource;
+
                                 Log.d("Sizeofimage", "" + resource.getByteCount());
+
                                 imageForPromt.setImageBitmap(resource);
                                 if (setImage) {
                                     try {
@@ -190,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                                         String reqString = Build.MANUFACTURER
                                                 + " " + Build.MODEL + " " + Build.VERSION.RELEASE
                                                 + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
-                                        FirebaseInfo.FirebaseDataBaseCheck.getDatabase().getReference().child("Errors & Logs").push().setValue(System.currentTimeMillis() + "  " + reqString + " " + e);
+                                        FirebaseDataBaseCheck.getDatabase().getReference().child("Errors & Logs").push().setValue(System.currentTimeMillis() + "  " + reqString + " " + e);
                                         Toast.makeText(MainActivity.this, "Error setting Wallpaper", Toast.LENGTH_SHORT).show();
                                         Toast.makeText(MainActivity.this, "sorry for incontinence our developers will fix this issue soon", Toast.LENGTH_SHORT).show();
 
@@ -198,15 +204,8 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         });
-//                ImageRequest request = ImageRequestBuilder.newBuilderWithSource(
-//                        Uri.parse(wallpaperList.get(position).getF()))
-//                        .setProgressiveRenderingEnabled(true)
-//                        .build();
-//                DraweeController controller = Fresco.newDraweeControllerBuilder()
-//                        .setImageRequest(request)
-//                        .setRetainImageOnFailure(true)
-//                        .build();
-//                mSimpleDraweeView.setController(controller);
+
+
 
 //                Ion.with(MainActivity.this)
 //                        .load(wallpaperList.get(position).getS())
@@ -292,15 +291,15 @@ public class MainActivity extends AppCompatActivity {
         blurWorker.updateBlurView();
         Query query;
         if (firstCheck == false) {
-            query = FirebaseInfo.FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(Paper.book().read(FirebaseInfo.howManyNodes, 10));
+            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(Paper.book().read(FirebaseInfo.howManyNodes, 10));
             if (Paper.book().read(FirebaseInfo.howManyNodes, 0) == 0) {
                 Paper.book().write(FirebaseInfo.howManyNodes, 10);
             }
             firstCheck = true;
         } else if (Paper.book().read(FirebaseInfo.lastNodeFetched, "").equals("")) {
-            query = FirebaseInfo.FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(10);
+            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(10);
         } else {
-            query = FirebaseInfo.FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByKey().startAt(Paper.book().read(FirebaseInfo.lastNodeFetched, "") + 1).limitToFirst(10);
+            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByKey().startAt(Paper.book().read(FirebaseInfo.lastNodeFetched, "") + 1).limitToFirst(10);
             int count = Paper.book().read(FirebaseInfo.howManyNodes, 0);
             Paper.book().write(FirebaseInfo.howManyNodes, count + 10);
         }
@@ -311,7 +310,6 @@ public class MainActivity extends AppCompatActivity {
                 ImageModel wallpapaer = dataSnapshot.getValue(ImageModel.class);
                 try {
                     if (wallpapaer.getS() != null) {
-                        Log.d("dataFB", wallpapaer.getS());
                         wallpapaer.setUid(dataSnapshot.getKey());
                         adapter.insert(wallpapaer, 0);
                         adapter.notifyDataSetChanged();
@@ -479,15 +477,15 @@ public class MainActivity extends AppCompatActivity {
                                                         if (imageLoaded) {
                                                             try {
                                                                 imageForPromt.buildDrawingCache();
-                                                                Bitmap bitmap = getBitmapfromUrl(wallpaperList.get(positionMain).getF());
-//                                                                WallpaperManager wm=
-//                                                                startActivity(WallpaperManager.getInstance(MainActivity.this).getCropAndSetWallpaperIntent(getImageUri(MainActivity.this,bitmap)));
-//
-////                                                                wm.setBitmap(bitmap);
+
+//                                                                WallpaperManager wm=WallpaperManager.getInstance(MainActivity.this);
+//                                                                wm.setBitmap(bitmap);
+////
 //                                                                Toast.makeText(MainActivity.this, "WallPaper Changed", Toast.LENGTH_SHORT).show();
 
                                                                 Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
                                                                 intent.setData(getImageUri(MainActivity.this, bitmap));
+//                                                                intent.setData(saveBitmap());
                                                                 startActivity(Intent.createChooser(intent, getString(R.string.menu_wallpaper)));
 
 
@@ -496,17 +494,15 @@ public class MainActivity extends AppCompatActivity {
                                                                 String reqString = Build.MANUFACTURER
                                                                         + " " + Build.MODEL + " " + Build.VERSION.RELEASE
                                                                         + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
-                                                                FirebaseInfo.FirebaseDataBaseCheck.getDatabase().getReference().child("Logs").push().setValue(System.currentTimeMillis() + "  " + reqString + " " + e);
+                                                                FirebaseDataBaseCheck.getDatabase().getReference().child("Logs").push().setValue(System.currentTimeMillis() + "  " + reqString + " " + e);
                                                                 Toast.makeText(MainActivity.this, "Error setting Wallpaper", Toast.LENGTH_SHORT).show();
                                                                 Toast.makeText(MainActivity.this, "sorry for incontinence our developers will fix this issue soon", Toast.LENGTH_SHORT).show();
                                                             }
                                                         } else {
                                                             Toast.makeText(MainActivity.this, "Image Loading", Toast.LENGTH_SHORT).show();
                                                         }
-
                                                     }
-                                                }
-        );
+                                                });
 
         setAsWallPaperButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -526,19 +522,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public Uri getImageUri(Context inContext, Bitmap inImage) {
+
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        //inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes);
         String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
         String path1 = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-
         return Uri.parse(path);
+
     }
 
 
     public Bitmap getBitmapfromUrl(String imageUrl) {
         try {
-
             URL url = new URL(imageUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
@@ -546,14 +542,19 @@ public class MainActivity extends AppCompatActivity {
             InputStream input = connection.getInputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(input);
             return bitmap;
-
         } catch (Exception e) {
             // TODO Auto-generated catch block
-
             e.printStackTrace();
             return null;
-
         }
+    }
+
+    public Uri saveBitmap(){
+        String sdcardBmpPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sample_text.bmp";
+        //Bitmap testBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.f);
+        AndroidBmpUtil bmpUtil = new AndroidBmpUtil();
+        boolean isSaveResult = bmpUtil.save(bitmap, sdcardBmpPath);
+        return Uri.parse(sdcardBmpPath);
     }
 
 }
