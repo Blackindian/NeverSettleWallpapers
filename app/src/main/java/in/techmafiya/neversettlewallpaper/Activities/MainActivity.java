@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     boolean imageLoaded = false, setImage = false;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView toolbarTextView;
-    private int a = 0, height, width,positionMain;
+    private int a = 0, height, width, positionMain;
     private RelativeLayout parentLayout;
     private View blurview, blurView1;
     private MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
@@ -158,18 +158,6 @@ public class MainActivity extends AppCompatActivity {
 
                 GetDisplaySize();
 
-                Glide.with(MainActivity.this.getApplicationContext()).load(wallpaperList.get(position).getS()).placeholder(R.drawable.placeholder1).thumbnail(0.05f).listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        return false;
-                    }
-                }).into(loadingImageView);
-
                 Glide.with(MainActivity.this.getApplicationContext())
                         .load(wallpaperList.get(position).getF())
                         .asBitmap()
@@ -178,33 +166,15 @@ public class MainActivity extends AppCompatActivity {
                             public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
                                 loadingImageView.setVisibility(View.GONE);
                                 imageForPromt.setImageBitmap(resource);
-
                                 imageLoaded = true;
                                 bitmap = resource;
 
-                                Log.d("Sizeofimage", "" + resource.getByteCount());
-
                                 imageForPromt.setImageBitmap(resource);
                                 if (setImage) {
-                                    try {
-
-                                        Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-                                        intent.setData(getImageUri(MainActivity.this, bitmap));
-                                        startActivity(Intent.createChooser(intent, getString(R.string.menu_wallpaper)));
-                                    } catch (Exception e) {
-                                        Log.d("Wallpaper", "" + e);
-                                        String reqString = Build.MANUFACTURER
-                                                + " " + Build.MODEL + " " + Build.VERSION.RELEASE
-                                                + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
-                                        FirebaseDataBaseCheck.getDatabase().getReference().child("Errors & Logs").push().setValue(System.currentTimeMillis() + "  " + reqString + " " + e);
-                                        Toast.makeText(MainActivity.this, "Error setting Wallpaper", Toast.LENGTH_SHORT).show();
-                                        Toast.makeText(MainActivity.this, "sorry for incontinence our developers will fix this issue soon", Toast.LENGTH_SHORT).show();
-
-                                    }
+                                    setWallpaper();
                                 }
                             }
                         });
-
 
 
 //                Ion.with(MainActivity.this)
@@ -213,30 +183,6 @@ public class MainActivity extends AppCompatActivity {
 //                        .placeholder(R.drawable.placeholder1)
 //                        .intoImageView(imageForPromt);
 
-
-//                        .listener(new RequestListener<String, GlideDrawable>() {
-//                            @Override
-//                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-//                                return false;
-//                            }
-//
-//                            @Override
-//                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-//                                imageLoaded=true;
-//                                if(setImage){
-//                                    try{
-//                                        Bitmap bitmap = ((BitmapDrawable)imageForPromt.getDrawable()).getBitmap();
-//                                        WallpaperManager wm=WallpaperManager.getInstance(MainActivity.this);
-//                                        wm.setBitmap(bitmap);
-//                                    }catch (Exception e){
-//                                        Toast.makeText(MainActivity.this, "Error setting wallpaper while image", Toast.LENGTH_SHORT).show();
-//                                    }
-//
-//                                }
-//                                return false;
-//                            }
-//                        })
-//                        .into(imageForPromt);
 
                 mWallpaperDialog
                         .setCancelable(true)
@@ -471,38 +417,16 @@ public class MainActivity extends AppCompatActivity {
                 .findViewById(R.id.setWallpaper);
 
         setAsWallPaperButton.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        setImage = true;
-                                                        if (imageLoaded) {
-                                                            try {
-                                                                imageForPromt.buildDrawingCache();
-
-//                                                                WallpaperManager wm=WallpaperManager.getInstance(MainActivity.this);
-//                                                                wm.setBitmap(bitmap);
-////
-//                                                                Toast.makeText(MainActivity.this, "WallPaper Changed", Toast.LENGTH_SHORT).show();
-
-                                                                Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-                                                                intent.setData(getImageUri(MainActivity.this, bitmap));
-//                                                                intent.setData(saveBitmap());
-                                                                startActivity(Intent.createChooser(intent, getString(R.string.menu_wallpaper)));
-
-
-                                                            } catch (Exception e) {
-                                                                Log.d("Wallpaper", "" + e);
-                                                                String reqString = Build.MANUFACTURER
-                                                                        + " " + Build.MODEL + " " + Build.VERSION.RELEASE
-                                                                        + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
-                                                                FirebaseDataBaseCheck.getDatabase().getReference().child("Logs").push().setValue(System.currentTimeMillis() + "  " + reqString + " " + e);
-                                                                Toast.makeText(MainActivity.this, "Error setting Wallpaper", Toast.LENGTH_SHORT).show();
-                                                                Toast.makeText(MainActivity.this, "sorry for incontinence our developers will fix this issue soon", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        } else {
-                                                            Toast.makeText(MainActivity.this, "Image Loading", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    }
-                                                });
+            @Override
+            public void onClick(View v) {
+                setImage = true;
+                if (imageLoaded) {
+                    setWallpaper();
+                } else {
+                    Toast.makeText(MainActivity.this, "Image Loading", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         setAsWallPaperButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -526,35 +450,36 @@ public class MainActivity extends AppCompatActivity {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         //inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+
+        Log.d("ImageSize",inImage.getAllocationByteCount() + " byteCount " + inImage.getByteCount() + " density - " + inImage.getDensity());
+
         String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        String path1 = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+
         return Uri.parse(path);
 
     }
 
-
-    public Bitmap getBitmapfromUrl(String imageUrl) {
+    public void setWallpaper() {
         try {
-            URL url = new URL(imageUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap bitmap = BitmapFactory.decodeStream(input);
-            return bitmap;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
-        }
-    }
+            imageForPromt.buildDrawingCache();
 
-    public Uri saveBitmap(){
-        String sdcardBmpPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/sample_text.bmp";
-        //Bitmap testBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.f);
-        AndroidBmpUtil bmpUtil = new AndroidBmpUtil();
-        boolean isSaveResult = bmpUtil.save(bitmap, sdcardBmpPath);
-        return Uri.parse(sdcardBmpPath);
+            Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
+            intent.setData(getImageUri(MainActivity.this, bitmap));
+            startActivity(Intent.createChooser(intent, getString(R.string.menu_wallpaper)));
+
+//            WallpaperManager wm = WallpaperManager.getInstance(MainActivity.this);
+//            wm.setBitmap(bitmap);
+//            Toast.makeText(MainActivity.this, "WallPaper Changed", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            Log.d("Wallpaper", "" + e);
+            String reqString = Build.MANUFACTURER
+                    + " " + Build.MODEL + " " + Build.VERSION.RELEASE
+                    + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
+            FirebaseDataBaseCheck.getDatabase().getReference().child("Logs").push().setValue(System.currentTimeMillis() + "  " + reqString + " " + e);
+            Toast.makeText(MainActivity.this, "Error setting Wallpaper", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "sorry for incontinence our developers will fix this issue soon", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
