@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.AlertDialog;
 import android.app.WallpaperManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,10 +50,13 @@ import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
 
 import at.favre.lib.dali.Dali;
 import at.favre.lib.dali.builder.live.LiveBlurWorker;
@@ -453,18 +457,44 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("ImageSize",inImage.getAllocationByteCount() + " byteCount " + inImage.getByteCount() + " density - " + inImage.getDensity());
 
+
         String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
 
         return Uri.parse(path);
 
     }
 
+
+    private Uri SaveImage(Bitmap finalBitmap) {
+
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + "/saved_images");
+        myDir.mkdirs();
+        Random generator = new Random();
+        int n = 10000;
+        n = generator.nextInt(n);
+        String fname = "Image-"+ n +".jpg";
+        File file = new File (myDir, fname);
+        if (file.exists ()) file.delete ();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+            return Uri.fromFile(file);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     public void setWallpaper() {
         try {
             imageForPromt.buildDrawingCache();
 
             Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-            intent.setData(getImageUri(MainActivity.this, bitmap));
+            Log.d("URI ",SaveImage(bitmap)+" " + getImageUri(MainActivity.this,bitmap)  );
+            intent.setData(SaveImage(bitmap));
             startActivity(Intent.createChooser(intent, getString(R.string.menu_wallpaper)));
 
 //            WallpaperManager wm = WallpaperManager.getInstance(MainActivity.this);
