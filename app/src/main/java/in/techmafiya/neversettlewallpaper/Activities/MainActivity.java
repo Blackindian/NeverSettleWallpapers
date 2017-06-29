@@ -478,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
         if (file.exists ()) file.delete ();
         try {
             FileOutputStream out = new FileOutputStream(file);
-            finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
             return Uri.fromFile(file);
@@ -493,13 +493,9 @@ public class MainActivity extends AppCompatActivity {
             imageForPromt.buildDrawingCache();
 
             Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-            Log.d("URI"," "+ getImageUri(MainActivity.this,bitmap)  );
-            intent.setData(SaveImage(bitmap));
+            intent.setDataAndType(SaveImage(bitmap), "image/jpg");
+            intent.putExtra("mimeType", "image/jpg");
             startActivity(Intent.createChooser(intent, getString(R.string.menu_wallpaper)));
-
-//            WallpaperManager wm = WallpaperManager.getInstance(MainActivity.this);
-//            wm.setBitmap(bitmap);
-//            Toast.makeText(MainActivity.this, "WallPaper Changed", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             Log.d("Wallpaper", "" + e);
