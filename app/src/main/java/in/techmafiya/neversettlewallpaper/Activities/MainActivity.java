@@ -478,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
         if (file.exists ()) file.delete ();
         try {
             FileOutputStream out = new FileOutputStream(file);
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
             return Uri.fromFile(file);
@@ -493,7 +493,7 @@ public class MainActivity extends AppCompatActivity {
             imageForPromt.buildDrawingCache();
 
             Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-            Log.d("URI ",SaveImage(bitmap)+" " + getImageUri(MainActivity.this,bitmap)  );
+            Log.d("URI"," "+ getImageUri(MainActivity.this,bitmap)  );
             intent.setData(SaveImage(bitmap));
             startActivity(Intent.createChooser(intent, getString(R.string.menu_wallpaper)));
 
