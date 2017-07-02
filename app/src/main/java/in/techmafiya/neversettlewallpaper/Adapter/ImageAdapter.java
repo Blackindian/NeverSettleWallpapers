@@ -49,7 +49,6 @@ public class ImageAdapter extends ArrayAdapter<ImageModel> {
 
             holder.wallpaperImageView = (ImageView) view.findViewById(R.id.image);
             holder.likeImageView = (ImageView) view.findViewById(R.id.likeButton);
-            holder.idTextView = (TextView) view.findViewById(R.id.textid);
 
             view.setTag(holder);
         } else {
@@ -72,14 +71,8 @@ public class ImageAdapter extends ArrayAdapter<ImageModel> {
                 .thumbnail(0.1f)
                 .into(holder.wallpaperImageView);
 
-//        Ion.with(activity)
-//                .load(wallPaperList.get(position).getS())
-//                .withBitmap()
-//                .placeholder(R.drawable.placeholder1)
-//                .intoImageView(holder.wallpaperImageView);
 
 
-        holder.idTextView.setText("" + wallPaperList.get(position).getUid());
 
         return view;
     }
@@ -87,7 +80,7 @@ public class ImageAdapter extends ArrayAdapter<ImageModel> {
     static class ViewHolder {
         ImageView wallpaperImageView;
         ImageView likeImageView;
-        TextView idTextView;
+
     }
 
 

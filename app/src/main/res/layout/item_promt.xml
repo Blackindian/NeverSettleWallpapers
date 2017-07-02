@@ -2,11 +2,13 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
 
 
     <ImageView
@@ -17,6 +19,23 @@
         android:scaleType="fitXY"
         android:src="@drawable/placeholder1" />
 
+    <ImageView
+        android:id="@+id/placeHolderImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/placeholder1" />
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:mpb_progressStyle="horizontal"
+        app:mpb_indeterminateTint="#fff"
+        app:mpb_useIntrinsicPadding="false"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal" />
 
     <ImageView
         android:id="@+id/setWallpaper"
@@ -29,10 +48,6 @@
         android:padding="15dp"
         android:src="@drawable/ic_set_wallpaper" />
 
-    <com.facebook.drawee.view.SimpleDraweeView
-        android:id="@+id/progressive_jpeg"
-        style="@style/drawee"
-        />
 
 
 </RelativeLayout>

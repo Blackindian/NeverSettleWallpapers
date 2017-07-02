@@ -57,9 +57,6 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
                         callback.wallPaperImagePressed(getAdapterPosition(),image.getDrawable());
                     }
                 }
-//            else if(v.getId() == image.getId()){
-//                Toast.makeText(activity,"ImageClicked",Toast.LENGTH_SHORT).show();
-//            }
         }
     }
 
@@ -86,6 +83,12 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
                 .into(holder.image);
     }
 
+
+    @Override
+    public void onViewRecycled(MyViewHolder holder) {
+        holder.image.setScaleType(ImageView.ScaleType.FIT_XY);
+        super.onViewRecycled(holder);
+    }
 
     @Override
     public int getItemCount() {

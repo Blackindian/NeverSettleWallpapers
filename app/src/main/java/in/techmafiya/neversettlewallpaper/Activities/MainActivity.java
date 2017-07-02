@@ -3,28 +3,30 @@ package in.techmafiya.neversettlewallpaper.Activities;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.AlertDialog;
-import android.app.WallpaperManager;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Movie;
+import android.graphics.Canvas;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
+
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
+
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -35,52 +37,43 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.GridView;
+
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+
 import com.bumptech.glide.request.target.Target;
-import com.facebook.drawee.view.SimpleDraweeView;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
-import com.koushikdutta.ion.Ion;
+
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
+import android.graphics.Bitmap;
 
 import at.favre.lib.dali.Dali;
 import at.favre.lib.dali.builder.live.LiveBlurWorker;
-import in.techmafiya.neversettlewallpaper.Adapter.ImageAdapter;
 import in.techmafiya.neversettlewallpaper.Adapter.ImagesAdapter;
-import in.techmafiya.neversettlewallpaper.AndroidBmpUtil;
 import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseDataBaseCheck;
 import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseInfo;
 import in.techmafiya.neversettlewallpaper.Permission.MarshMallowPermission;
 import in.techmafiya.neversettlewallpaper.Models.ImageModel;
 import in.techmafiya.neversettlewallpaper.R;
 import io.paperdb.Paper;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 public class MainActivity extends AppCompatActivity implements ImagesAdapter.ImageAdapterCallback {
 
@@ -89,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     private ImagesAdapter adapter;
     private boolean firstCheck = false;
     private ArrayList<ImageModel> wallpaperList = new ArrayList<ImageModel>();
-
+    private MaterialProgressBar indeterminatProgressBar;
     boolean imageLoaded = false, setImage = false;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView toolbarTextView;
@@ -97,8 +90,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     private RelativeLayout parentLayout;
     private View blurview, blurView1;
     private MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
-    private ImageView imageForPromt, setAsWallPaperButton;
-    private SimpleDraweeView mSimpleDraweeView;
+    private ImageView imageForPromt, setAsWallPaperButton, placeholderImage;
     private Bitmap bitmap;
     private RecyclerView recyclerView;
 
@@ -125,9 +117,9 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         adapter = new ImagesAdapter(MainActivity.this, wallpaperList);
         adapter.setCallback(this);
         UpdateFromDatabase();
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(),2);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.hasFixedSize();
+        recyclerView.setHasFixedSize(false);
         recyclerView.addItemDecoration(new SpacesItemDecoration(15));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
@@ -147,6 +139,8 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         }
     }
 
+
+
     void initUiElements() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -158,19 +152,16 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/Lato-Bold.ttf");
         toolbarTextView.setTypeface(custom_font);
 
+
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("");
+
+
         blurWorker = Dali.create(MainActivity.this).liveBlur(parentLayout, blurview).downScale(8).assemble(true);
         blurWorker1 = Dali.create(MainActivity.this).liveBlur(parentLayout, blurView1).blurRadius(3).downScale(3).assemble(true);
         blurWorker.updateBlurView();
         blurWorker1.updateBlurView();
-//        setSupportActionBar(toolbar);
-//        actionBar.setHomeAsUpIndicator(R.drawable.ic_oneplus_white);
-//        actionBar.setHomeButtonEnabled(true);
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        // Create global configuration and initialize ImageLoader with this config
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
@@ -185,25 +176,8 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
 
-//        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this,
-//                recyclerView, new ClickListener() {
-//            @Override
-//            public void onClick(View view, final int position) {
-//                //Values are passing to activity & to fragment as well
-//                Toast.makeText(MainActivity.this, "Single Click on position :"+position,
-//                        Toast.LENGTH_SHORT).show();
-//                listViewCallingMethods(position);
-//            }
-//
-//            @Override
-//            public void onLongClick(View view, int position) {
-//                Toast.makeText(MainActivity.this, "Long press on position :"+position,
-//                        Toast.LENGTH_LONG).show();
-//            }
-//        }));.
 
-
-        if(Build.VERSION.SDK_INT > 22) {
+        if (Build.VERSION.SDK_INT > 22) {
             recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -211,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                     blurWorker.updateBlurView();
                 }
             });
-        }else{
+        } else {
             recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -236,33 +210,62 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         setImage = false;
 
 
-
-
         GetDisplaySize();
-        imageForPromt.setImageDrawable(previewImage);
-        Glide.with(MainActivity.this.getApplicationContext())
-                .load(wallpaperList.get(position).getF())
+        placeholderImage.setImageDrawable(previewImage);
+
+        Glide.with(MainActivity.this).
+                load(wallpaperList.get(position).getF())
                 .asBitmap()
-                .into(new SimpleTarget<Bitmap>() {
+                .listener(new RequestListener<String, Bitmap>() {
                     @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                        imageForPromt.setImageBitmap(resource);
+                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         imageLoaded = true;
+                        placeholderImage.setVisibility(View.GONE);
                         bitmap = resource;
                         imageForPromt.setImageBitmap(resource);
                         if (setImage) {
                             setWallpaper();
                         }
+
+                        return false;
                     }
-                });
+                })
+                .into(imageForPromt);
+
+
+//        Glide.with(MainActivity.this.getApplicationContext())
+//                .load(wallpaperList.get(position).getF())
+//                .asBitmap()
+//                .placeholder(previewImage)
+//                .into(new SimpleTarget<Bitmap>() {
+//                    @Override
+//                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+//                        imageLoaded = true;
+//                        bitmap = resource;
+//                        imageForPromt.setImageBitmap(resource);
+//                        if (setImage) {
+//                            setWallpaper();
+//                        }
+//                    }
+//                });
 
 
 //                Ion.with(MainActivity.this)
 //                        .load(wallpaperList.get(position).getF())
 //                        .withBitmap()
-//                        .placeholder(previewImage)
-//                        .intoImageView(imageForPromt);
-
+//                        .intoImageView(imageForPromt)
+//                        .setCallback(new FutureCallback<ImageView>() {
+//                            @Override
+//                            public void onCompleted(Exception e, ImageView result) {
+//                                placeholderImage.setVisibility(View.GONE);
+//                            }
+//                        });
+//
 
         mWallpaperDialog
                 .setCancelable(true)
@@ -320,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 try {
                     if (wallpapaer.getS() != null) {
                         wallpapaer.setUid(dataSnapshot.getKey());
-                        wallpaperList.add(0,wallpapaer);
+                        wallpaperList.add(0, wallpapaer);
                         adapter.notifyDataSetChanged();
                         Paper.book().write(FirebaseInfo.lastNodeFetched, dataSnapshot.getKey());
                         a++;
@@ -465,18 +468,16 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 this);
         alertDialogBuilder.setView(promptsView);
 
-        mSimpleDraweeView = (SimpleDraweeView) findViewById(R.id.progressive_jpeg);
 
         imageForPromt = (ImageView) promptsView
                 .findViewById(R.id.promtImageView);
 
-
-
-        imageForPromt.setDrawingCacheEnabled(true);
-
+        placeholderImage = (ImageView) promptsView.findViewById(R.id.placeHolderImage);
 
         setAsWallPaperButton = (ImageView) promptsView
                 .findViewById(R.id.setWallpaper);
+
+        indeterminatProgressBar = (MaterialProgressBar) promptsView.findViewById(R.id.progressbar);
 
         setAsWallPaperButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -505,21 +506,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         height = displayMetrics.heightPixels;
         width = displayMetrics.widthPixels;
-    }
-
-    public Uri getImageUri(Context inContext, Bitmap inImage) {
-
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        //inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-
-        Log.d("ImageSize", inImage.getAllocationByteCount() + " byteCount " + inImage.getByteCount() + " density - " + inImage.getDensity());
-
-
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-
-        return Uri.parse(path);
-
     }
 
 
@@ -569,7 +555,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
     @Override
     public void wallPaperImagePressed(int position, Drawable previewImage) {
-        listViewCallingMethods(position,previewImage);
+        listViewCallingMethods(position, previewImage);
 
     }
 
