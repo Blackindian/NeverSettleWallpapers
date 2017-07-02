@@ -221,17 +221,15 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                     public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
                         return false;
                     }
-
                     @Override
                     public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         imageLoaded = true;
+                        indeterminatProgressBar.setVisibility(View.GONE);
                         placeholderImage.setVisibility(View.GONE);
                         bitmap = resource;
-                        imageForPromt.setImageBitmap(resource);
                         if (setImage) {
                             setWallpaper();
                         }
-
                         return false;
                     }
                 })
