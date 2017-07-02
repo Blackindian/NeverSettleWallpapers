@@ -10,7 +10,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Movie;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,13 +22,21 @@ import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -45,6 +56,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
+import com.koushikdutta.ion.Ion;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
@@ -61,6 +73,7 @@ import java.util.Random;
 import at.favre.lib.dali.Dali;
 import at.favre.lib.dali.builder.live.LiveBlurWorker;
 import in.techmafiya.neversettlewallpaper.Adapter.ImageAdapter;
+import in.techmafiya.neversettlewallpaper.Adapter.ImagesAdapter;
 import in.techmafiya.neversettlewallpaper.AndroidBmpUtil;
 import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseDataBaseCheck;
 import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseInfo;
@@ -69,14 +82,14 @@ import in.techmafiya.neversettlewallpaper.Models.ImageModel;
 import in.techmafiya.neversettlewallpaper.R;
 import io.paperdb.Paper;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ImagesAdapter.ImageAdapterCallback {
 
 
     private LiveBlurWorker blurWorker, blurWorker1;
-    private ImageAdapter adapter;
+    private ImagesAdapter adapter;
     private boolean firstCheck = false;
     private ArrayList<ImageModel> wallpaperList = new ArrayList<ImageModel>();
-    private GridView gridView;
+
     boolean imageLoaded = false, setImage = false;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView toolbarTextView;
@@ -84,15 +97,22 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout parentLayout;
     private View blurview, blurView1;
     private MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
-    private ImageView imageForPromt, setAsWallPaperButton, loadingImageView;
+    private ImageView imageForPromt, setAsWallPaperButton;
     private SimpleDraweeView mSimpleDraweeView;
     private Bitmap bitmap;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Paper.init(this);
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            Window w = getWindow();
+//            w.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//            w.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//        }
 
         initMarshmallowPermission();
 
@@ -102,10 +122,29 @@ public class MainActivity extends AppCompatActivity {
 
         fabButton();
 
-        adapter = new ImageAdapter(MainActivity.this, wallpaperList);
+        adapter = new ImagesAdapter(MainActivity.this, wallpaperList);
+        adapter.setCallback(this);
         UpdateFromDatabase();
-        gridView.setAdapter(adapter);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(),2);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.hasFixedSize();
+        recyclerView.addItemDecoration(new SpacesItemDecoration(15));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
 
+
+    }
+
+    public void FullScreencall() {
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            View v = this.getWindow().getDecorView();
+            v.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            //for new api versions.
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
     }
 
     void initUiElements() {
@@ -142,89 +181,109 @@ public class MainActivity extends AppCompatActivity {
                 UpdateFromDatabase();
             }
         });
-        gridView = (GridView) findViewById(R.id.wallpaper_List_View);
 
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                blurWorker1.updateBlurView();
-                blurView1.setVisibility(View.VISIBLE);
-
-                positionMain = position;
-                AlertDialog.Builder mWallpaperDialog = wallPaperPromt();
-
-                imageLoaded = false;
-                setImage = false;
-
-//                loadingImageView.setVisibility(View.VISIBLE);
-//                Glide.with(MainActivity.this).load(R.drawable.loading2).into(loadingImageView);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
 
-                GetDisplaySize();
+//        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this,
+//                recyclerView, new ClickListener() {
+//            @Override
+//            public void onClick(View view, final int position) {
+//                //Values are passing to activity & to fragment as well
+//                Toast.makeText(MainActivity.this, "Single Click on position :"+position,
+//                        Toast.LENGTH_SHORT).show();
+//                listViewCallingMethods(position);
+//            }
+//
+//            @Override
+//            public void onLongClick(View view, int position) {
+//                Toast.makeText(MainActivity.this, "Long press on position :"+position,
+//                        Toast.LENGTH_LONG).show();
+//            }
+//        }));.
 
-                Glide.with(MainActivity.this.getApplicationContext())
-                        .load(wallpaperList.get(position).getF())
-                        .asBitmap()
-                        .into(new SimpleTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                                loadingImageView.setVisibility(View.GONE);
-                                imageForPromt.setImageBitmap(resource);
-                                imageLoaded = true;
-                                bitmap = resource;
 
-                                imageForPromt.setImageBitmap(resource);
-                                if (setImage) {
-                                    setWallpaper();
-                                }
-                            }
-                        });
+        if(Build.VERSION.SDK_INT > 22) {
+            recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    blurWorker1.updateBlurView();
+                    blurWorker.updateBlurView();
+                }
+            });
+        }else{
+            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    blurWorker1.updateBlurView();
+                    blurWorker.updateBlurView();
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+            });
+        }
+
+
+    }
+
+    public void listViewCallingMethods(int position, Drawable previewImage) {
+        blurWorker1.updateBlurView();
+        blurView1.setVisibility(View.VISIBLE);
+
+        positionMain = position;
+        AlertDialog.Builder mWallpaperDialog = wallPaperPromt();
+
+        imageLoaded = false;
+        setImage = false;
+
+
+
+
+        GetDisplaySize();
+        imageForPromt.setImageDrawable(previewImage);
+        Glide.with(MainActivity.this.getApplicationContext())
+                .load(wallpaperList.get(position).getF())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                        imageForPromt.setImageBitmap(resource);
+                        imageLoaded = true;
+                        bitmap = resource;
+                        imageForPromt.setImageBitmap(resource);
+                        if (setImage) {
+                            setWallpaper();
+                        }
+                    }
+                });
 
 
 //                Ion.with(MainActivity.this)
-//                        .load(wallpaperList.get(position).getS())
+//                        .load(wallpaperList.get(position).getF())
 //                        .withBitmap()
-//                        .placeholder(R.drawable.placeholder1)
+//                        .placeholder(previewImage)
 //                        .intoImageView(imageForPromt);
 
 
-                mWallpaperDialog
-                        .setCancelable(true)
-                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                            @Override
-                            public void onCancel(DialogInterface dialog) {
-                                blurView1.setVisibility(View.GONE);
-                            }
-                        })
-                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                blurView1.setVisibility(View.GONE);
-                            }
-                        });
+        mWallpaperDialog
+                .setCancelable(true)
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        blurView1.setVisibility(View.GONE);
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        blurView1.setVisibility(View.GONE);
+                    }
+                });
 
 
-                AlertDialog alertDialog = mWallpaperDialog.create();
-                alertDialog.show();
+        AlertDialog alertDialog = mWallpaperDialog.create();
+        alertDialog.show();
 
-                alertDialog.getWindow().setLayout(width - (width / 100) * 20, height - (height / 100) * 20);
-
-            }
-        });
-
-        gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                blurWorker1.updateBlurView();
-                blurWorker.updateBlurView();
-            }
-        });
-
+        alertDialog.getWindow().setLayout(width - (width / 100) * 20, height - (height / 100) * 20);
 
     }
 
@@ -261,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     if (wallpapaer.getS() != null) {
                         wallpapaer.setUid(dataSnapshot.getKey());
-                        adapter.insert(wallpapaer, 0);
+                        wallpaperList.add(0,wallpapaer);
                         adapter.notifyDataSetChanged();
                         Paper.book().write(FirebaseInfo.lastNodeFetched, dataSnapshot.getKey());
                         a++;
@@ -411,8 +470,7 @@ public class MainActivity extends AppCompatActivity {
         imageForPromt = (ImageView) promptsView
                 .findViewById(R.id.promtImageView);
 
-        loadingImageView = (ImageView) promptsView
-                .findViewById(R.id.loadingImageView);
+
 
         imageForPromt.setDrawingCacheEnabled(true);
 
@@ -453,9 +511,9 @@ public class MainActivity extends AppCompatActivity {
 
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         //inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        inImage.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 
-        Log.d("ImageSize",inImage.getAllocationByteCount() + " byteCount " + inImage.getByteCount() + " density - " + inImage.getDensity());
+        Log.d("ImageSize", inImage.getAllocationByteCount() + " byteCount " + inImage.getByteCount() + " density - " + inImage.getDensity());
 
 
         String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
@@ -468,33 +526,33 @@ public class MainActivity extends AppCompatActivity {
     private Uri SaveImage(Bitmap finalBitmap) {
 
         String root = Environment.getExternalStorageDirectory().toString();
-        File myDir = new File(root + "/saved_images");
+        File myDir = new File(root + "/NeverSettleWalls");
         myDir.mkdirs();
         Random generator = new Random();
         int n = 10000;
         n = generator.nextInt(n);
-        String fname = "Image-"+ n +".jpg";
-        File file = new File (myDir, fname);
-        if (file.exists ()) file.delete ();
+        String fname = "Image-" + n + ".png";
+        File file = new File(myDir, fname);
+        if (file.exists()) file.delete();
         try {
             FileOutputStream out = new FileOutputStream(file);
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
             return Uri.fromFile(file);
-
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
     public void setWallpaper() {
         try {
             imageForPromt.buildDrawingCache();
 
             Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
-            intent.setDataAndType(SaveImage(bitmap), "image/jpg");
-            intent.putExtra("mimeType", "image/jpg");
+            intent.setDataAndType(SaveImage(bitmap), "image/png");
+            intent.putExtra("mimeType", "image/png");
             startActivity(Intent.createChooser(intent, getString(R.string.menu_wallpaper)));
 
         } catch (Exception e) {
@@ -508,4 +566,88 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    public void wallPaperImagePressed(int position, Drawable previewImage) {
+        listViewCallingMethods(position,previewImage);
+
+    }
+
+
+    public static interface ClickListener {
+        public void onClick(View view, int position);
+
+        public void onLongClick(View view, int position);
+    }
+
+
 }
+
+class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
+
+    private MainActivity.ClickListener clicklistener;
+    private GestureDetector gestureDetector;
+
+    public RecyclerTouchListener(Context context, final RecyclerView recycleView, final MainActivity.ClickListener clicklistener) {
+
+        this.clicklistener = clicklistener;
+        gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                View child = recycleView.findChildViewUnder(e.getX(), e.getY());
+                if (child != null && clicklistener != null) {
+                    clicklistener.onLongClick(child, recycleView.getChildAdapterPosition(child));
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+        View child = rv.findChildViewUnder(e.getX(), e.getY());
+        if (child != null && clicklistener != null && gestureDetector.onTouchEvent(e)) {
+            clicklistener.onClick(child, rv.getChildAdapterPosition(child));
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+    }
+
+    @Override
+    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+    }
+}
+
+class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+    private int space;
+
+    public SpacesItemDecoration(int space) {
+        this.space = space;
+    }
+
+    @Override
+    public void getItemOffsets(Rect outRect, View view,
+                               RecyclerView parent, RecyclerView.State state) {
+        outRect.left = space;
+        outRect.right = space;
+        outRect.bottom = space;
+
+        // Add top margin only for the first item to avoid double space between items
+        if (parent.getChildLayoutPosition(view) == 0) {
+            outRect.top = space;
+        } else {
+            outRect.top = 0;
+        }
+    }
+}
+

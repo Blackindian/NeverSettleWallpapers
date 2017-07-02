@@ -56,16 +56,14 @@ public class ImageAdapter extends ArrayAdapter<ImageModel> {
             holder = (ViewHolder) view.getTag();
         }
 
-
+        holder.likeImageView.setTag(position);
         holder.likeImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Toast.makeText(getContext(), "Save Wallpapers! - under build", Toast.LENGTH_SHORT).show();
+                holder.likeImageView.setImageResource(R.drawable.ic_like);
+                Toast.makeText(getContext(), "Save Wallpapers! - under build ", Toast.LENGTH_SHORT).show();
             }
         });
-
-
 
 
         Glide.with(activity)

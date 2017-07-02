@@ -17,14 +17,6 @@
         android:scaleType="fitXY"
         android:src="@drawable/placeholder1" />
 
-    <ImageView
-        android:id="@+id/loadingImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY" />
-
 
     <ImageView
         android:id="@+id/setWallpaper"

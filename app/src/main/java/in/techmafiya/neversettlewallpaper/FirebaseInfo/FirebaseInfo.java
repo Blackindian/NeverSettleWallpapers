@@ -7,11 +7,11 @@ package in.techmafiya.neversettlewallpaper.FirebaseInfo;
 public class FirebaseInfo {
 
     public static String mainNode = "gokissan";
-    public static String NodeUsing = "NeverSettle";
+//    public static String NodeUsing = "NeverSettle";
 //    public static String NodeUsing = "NeverSettleWallpaper";
     public static String lastNodeFetched = "lastNode";
     public static String howManyNodes = "lastNumbers";
     public int a ;
-//    public static String NodeUsing = "test";
+    public static String NodeUsing = "test";
 
 }

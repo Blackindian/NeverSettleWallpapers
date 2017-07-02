@@ -46,24 +46,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/wallpaper_List_View"
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:clipToPadding="false"
-            android:columnWidth="150dp"
-            android:gravity="center"
-            android:horizontalSpacing="10dp"
-            android:numColumns="auto_fit"
+            android:layout_height="wrap_content"
             android:paddingTop="15dp"
             android:paddingBottom="60dp"
-            android:scrollbars="none"
-            android:stretchMode="columnWidth"
+            android:horizontalSpacing="10dp"
             android:verticalSpacing="10dp"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp" />
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
     </android.support.v4.widget.SwipeRefreshLayout>
     <View
         android:layout_below="@+id/toolbar"
