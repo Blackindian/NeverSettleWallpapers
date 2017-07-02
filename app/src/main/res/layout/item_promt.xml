@@ -45,6 +45,7 @@
         android:layout_weight="1"
         android:background="#51ffffff"
         android:clickable="true"
+        android:visibility="gone"
         android:padding="15dp"
         android:src="@drawable/ic_set_wallpaper" />
 

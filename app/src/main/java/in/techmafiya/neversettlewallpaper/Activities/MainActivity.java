@@ -62,6 +62,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
+
 import android.graphics.Bitmap;
 
 import at.favre.lib.dali.Dali;
@@ -157,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
 
-
         if (Build.VERSION.SDK_INT > 22) {
             recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
                 @Override
@@ -190,7 +190,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         imageLoaded = false;
         setImage = false;
 
-
         GetDisplaySize();
         placeholderImage.setImageDrawable(previewImage);
         Glide.with(MainActivity.this).
@@ -201,11 +200,13 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                     public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
                         return false;
                     }
+
                     @Override
                     public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                         imageLoaded = true;
                         indeterminatProgressBar.setVisibility(View.GONE);
                         placeholderImage.setVisibility(View.GONE);
+                        setAsWallPaperButton.setVisibility(View.VISIBLE);
                         bitmap = resource;
                         if (setImage) {
                             setWallpaper();
@@ -214,7 +215,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                     }
                 })
                 .into(imageForPromt);
-
 
 //        Glide.with(MainActivity.this.getApplicationContext())
 //                .load(wallpaperList.get(position).getF())
