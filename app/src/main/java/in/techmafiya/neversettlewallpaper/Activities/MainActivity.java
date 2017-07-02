@@ -216,34 +216,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 })
                 .into(imageForPromt);
 
-//        Glide.with(MainActivity.this.getApplicationContext())
-//                .load(wallpaperList.get(position).getF())
-//                .asBitmap()
-//                .placeholder(previewImage)
-//                .into(new SimpleTarget<Bitmap>() {
-//                    @Override
-//                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-//                        imageLoaded = true;
-//                        bitmap = resource;
-//                        imageForPromt.setImageBitmap(resource);
-//                        if (setImage) {
-//                            setWallpaper();
-//                        }
-//                    }
-//                });
 
-
-//                Ion.with(MainActivity.this)
-//                        .load(wallpaperList.get(position).getF())
-//                        .withBitmap()
-//                        .intoImageView(imageForPromt)
-//                        .setCallback(new FutureCallback<ImageView>() {
-//                            @Override
-//                            public void onCompleted(Exception e, ImageView result) {
-//                                placeholderImage.setVisibility(View.GONE);
-//                            }
-//                        });
-//
 
         mWallpaperDialog
                 .setCancelable(true)
