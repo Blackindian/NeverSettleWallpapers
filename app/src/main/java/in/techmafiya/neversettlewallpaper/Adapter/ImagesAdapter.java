@@ -47,7 +47,6 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
         public void onClick(View v) {
             if (v.getId() == like.getId()) {
                 if("unlike".equals(like.getTag())){
-
                     like.setImageResource(R.drawable.ic_like);
                     like.setTag("like");
                 }else if("like".equals(like.getTag())){
@@ -55,7 +54,6 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
                     like.setTag("unlike");
                 }
 
-                like.setImageResource(R.drawable.ic_like);
             }else
                 if(v.getId() == image.getId()){
                     if(callback != null) {
