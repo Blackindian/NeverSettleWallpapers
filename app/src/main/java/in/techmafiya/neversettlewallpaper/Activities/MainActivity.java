@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(false);
-        recyclerView.addItemDecoration(new SpacesItemDecoration(15));
+        recyclerView.addItemDecoration(new SpacesItemDecoration(10));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
@@ -525,11 +525,11 @@ class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         outRect.bottom = space;
 
         // Add top margin only for the first item to avoid double space between items
-        if (parent.getChildLayoutPosition(view) == 0) {
-            outRect.top = space;
-        } else {
-            outRect.top = 0;
-        }
+//        if (parent.getChildLayoutPosition(view) == 0) {
+//            outRect.top = space;
+//        } else {
+//            outRect.top = 0;
+//        }
     }
 }
 

@@ -12,6 +12,7 @@ public class FirebaseInfo {
     public static String lastNodeFetched = "lastNode";
     public static String howManyNodes = "lastNumbers";
     public int a ;
+    public static String likedStringArray = "liked";
     public static String NodeUsing = "test";
 
 }

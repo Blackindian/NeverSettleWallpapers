@@ -13,10 +13,13 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseInfo;
 import in.techmafiya.neversettlewallpaper.Models.ImageModel;
 import in.techmafiya.neversettlewallpaper.R;
+import io.paperdb.Paper;
 
 /**
  * Created by sai on 7/1/17.
@@ -47,17 +50,23 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
         public void onClick(View v) {
             if (v.getId() == like.getId()) {
                 if("unlike".equals(like.getTag())){
-                    like.setImageResource(R.drawable.ic_like);
+                    like.setImageResource(R.drawable.ic_action_like);
                     like.setTag("like");
+                    List<String> likedString = new ArrayList<>();
+                    likedString = Paper.book().read(FirebaseInfo.likedStringArray,new ArrayList<String>());
+                    likedString.add(imageList.get(getAdapterPosition()).getUid());
+                    Paper.book().write(FirebaseInfo.likedStringArray,likedString);
                 }else if("like".equals(like.getTag())){
-                    like.setImageResource(R.drawable.like_hollow);
+                    like.setImageResource(R.drawable.ic_action_unlike);
                     like.setTag("unlike");
+                    List<String> likedString = new ArrayList<>();
+                    likedString = Paper.book().read(FirebaseInfo.likedStringArray,new ArrayList<String>());
+                    likedString.remove(imageList.get(getAdapterPosition()).getUid());
+                    Paper.book().write(FirebaseInfo.likedStringArray,likedString);
                 }
-
             }else
                 if(v.getId() == image.getId()){
                     if(callback != null) {
-
                         callback.wallPaperImagePressed(getAdapterPosition(),image.getDrawable());
                     }
                 }
@@ -67,6 +76,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
     public ImagesAdapter(Context activity, List<ImageModel> imageList) {
         this.imageList = imageList;
         this.activity = activity;
+        Paper.init(activity);
     }
 
     @Override
@@ -85,8 +95,16 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
                 .placeholder(R.drawable.placeholder1)
                 .thumbnail(0.1f)
                 .into(holder.image);
-    }
 
+        List<String> likedStringList = new ArrayList<>();
+
+        likedStringList = Paper.book().read(FirebaseInfo.likedStringArray,new ArrayList<String>());
+
+            if(likedStringList.contains(mImageModel.getUid())){
+                holder.like.setImageResource(R.drawable.ic_action_like);
+                holder.like.setTag("like");
+            }
+    }
 
     @Override
     public void onViewRecycled(MyViewHolder holder) {
