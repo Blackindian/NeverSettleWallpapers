@@ -51,6 +51,12 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
                     likedString = Paper.book().read(FirebaseInfo.likedStringArray,new ArrayList<String>());
                     likedString.add(imageList.get(getAdapterPosition()).getUid());
                     Paper.book().write(FirebaseInfo.likedStringArray,likedString);
+
+                    List<ImageModel> likedImagesList = new ArrayList<>();
+                    likedImagesList = Paper.book().read(FirebaseInfo.likedImagesArray,new ArrayList<ImageModel>());
+                    likedImagesList.add(imageList.get(getAdapterPosition()));
+                    Paper.book().write(FirebaseInfo.likedImagesArray,likedImagesList);
+
                 }else if("like".equals(like.getTag())){
                     like.setImageResource(R.drawable.ic_action_unlike);
                     like.setTag("unlike");
@@ -58,6 +64,12 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
                     likedString = Paper.book().read(FirebaseInfo.likedStringArray,new ArrayList<String>());
                     likedString.remove(imageList.get(getAdapterPosition()).getUid());
                     Paper.book().write(FirebaseInfo.likedStringArray,likedString);
+
+                    List<ImageModel> likedImagesList = new ArrayList<>();
+                    likedImagesList = Paper.book().read(FirebaseInfo.likedImagesArray,new ArrayList<ImageModel>());
+                    likedImagesList.remove(imageList.get(getAdapterPosition()));
+                    Paper.book().write(FirebaseInfo.likedImagesArray,likedImagesList);
+
                 }
             }else
                 if(v.getId() == image.getId()){

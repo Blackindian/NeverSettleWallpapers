@@ -13,6 +13,8 @@ public class FirebaseInfo {
     public static String howManyNodes = "lastNumbers";
     public int a ;
     public static String likedStringArray = "liked";
+    public static String likedImagesArray = "likedImages";
     public static String NodeUsing = "test";
+
 
 }

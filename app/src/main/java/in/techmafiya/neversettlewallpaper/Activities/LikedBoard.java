@@ -3,57 +3,41 @@ package in.techmafiya.neversettlewallpaper.Activities;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
-
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
+import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-
 import com.bumptech.glide.request.RequestListener;
-
 import com.bumptech.glide.request.target.Target;
-
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
-
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
@@ -61,22 +45,21 @@ import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-
-import android.graphics.Bitmap;
 
 import at.favre.lib.dali.Dali;
 import at.favre.lib.dali.builder.live.LiveBlurWorker;
 import in.techmafiya.neversettlewallpaper.Adapter.ImagesAdapter;
 import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseDataBaseCheck;
 import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseInfo;
-import in.techmafiya.neversettlewallpaper.Permission.MarshMallowPermission;
 import in.techmafiya.neversettlewallpaper.Models.ImageModel;
+import in.techmafiya.neversettlewallpaper.Permission.MarshMallowPermission;
 import in.techmafiya.neversettlewallpaper.R;
 import io.paperdb.Paper;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
-public class MainActivity extends AppCompatActivity implements ImagesAdapter.ImageAdapterCallback {
+public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.ImageAdapterCallback{
 
     private LiveBlurWorker blurWorker, blurWorker1;
     private ImagesAdapter adapter;
@@ -84,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     private ArrayList<ImageModel> wallpaperList = new ArrayList<ImageModel>();
     private MaterialProgressBar indeterminatProgressBar;
     boolean imageLoaded = false, setImage = false;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView toolbarTextView;
     private int a = 0, height, width, positionMain;
     private RelativeLayout parentLayout;
@@ -93,35 +75,34 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     private ImageView imageForPromt, setAsWallPaperButton, placeholderImage;
     private Bitmap bitmap;
     private RecyclerView recyclerView;
-    public FloatingActionMenu rightLowerMenu;
+    private  List<ImageModel> LikedImageList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_liked_board);
+
         Paper.init(this);
 
+
         initMarshmallowPermission();
-
-        initUiElements();
-
+        InitUiElement();
         GetDisplaySize();
 
-        fabButton();
-
-        adapter = new ImagesAdapter(MainActivity.this, wallpaperList);
+        adapter = new ImagesAdapter(LikedBoard.this, wallpaperList);
         adapter.setCallback(this);
-        UpdateFromDatabase();
+        getDataFromDB();
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setHasFixedSize(false);
-        recyclerView.addItemDecoration(new SpacesItemDecoration(10));
+        recyclerView.addItemDecoration(new SpacesPaddingItemDecoration(10));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
     }
 
-    void initUiElements() {
+    public  void InitUiElement(){
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         parentLayout = (RelativeLayout) findViewById(R.id.blurlayout);
@@ -138,20 +119,12 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         actionBar.setTitle("");
 
 
-        blurWorker = Dali.create(MainActivity.this).liveBlur(parentLayout, blurview).downScale(8).assemble(true);
-        blurWorker1 = Dali.create(MainActivity.this).liveBlur(parentLayout, blurView1).blurRadius(3).downScale(3).assemble(true);
+        blurWorker = Dali.create(LikedBoard.this).liveBlur(parentLayout, blurview).downScale(8).assemble(true);
+        blurWorker1 = Dali.create(LikedBoard.this).liveBlur(parentLayout, blurView1).blurRadius(3).downScale(3).assemble(true);
         blurWorker.updateBlurView();
         blurWorker1.updateBlurView();
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
-                UpdateFromDatabase();
-            }
-        });
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
@@ -162,9 +135,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                     blurWorker1.updateBlurView();
                     blurWorker.updateBlurView();
-                    if(rightLowerMenu.isOpen()){
-                        rightLowerMenu.close(true);
-                    }
                 }
             });
         } else {
@@ -173,15 +143,23 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     blurWorker1.updateBlurView();
                     blurWorker.updateBlurView();
-                    if(rightLowerMenu.isOpen()){
-                        rightLowerMenu.close(true);
-                    }
                     super.onScrollStateChanged(recyclerView, newState);
                 }
             });
         }
 
+    }
 
+    public void getDataFromDB(){
+        LikedImageList = Paper.book().read(FirebaseInfo.likedImagesArray,new ArrayList<ImageModel>());
+
+        if(!LikedImageList.isEmpty()){
+            for(ImageModel imageModel : LikedImageList){
+                wallpaperList.add(imageModel);
+                adapter.notifyDataSetChanged();
+            }
+
+        }
     }
 
     public void listViewCallingMethods(int position, Drawable previewImage) {
@@ -196,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
         GetDisplaySize();
         placeholderImage.setImageDrawable(previewImage);
-        Glide.with(MainActivity.this).
+        Glide.with(LikedBoard.this).
                 load(wallpaperList.get(position).getF())
                 .asBitmap()
                 .listener(new RequestListener<String, Bitmap>() {
@@ -254,145 +232,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
     }
 
-    public void UpdateFromDatabase() {
-        blurWorker.updateBlurView();
-        Query query;
-        if (firstCheck == false) {
-            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(Paper.book().read(FirebaseInfo.howManyNodes, 10));
-            if (Paper.book().read(FirebaseInfo.howManyNodes, 0) == 0) {
-                Paper.book().write(FirebaseInfo.howManyNodes, 10);
-            }
-            firstCheck = true;
-        } else if (Paper.book().read(FirebaseInfo.lastNodeFetched, "").equals("")) {
-            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(10);
-        } else {
-            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByKey().startAt(Paper.book().read(FirebaseInfo.lastNodeFetched, "") + 1).limitToFirst(10);
-            int count = Paper.book().read(FirebaseInfo.howManyNodes, 0);
-            Paper.book().write(FirebaseInfo.howManyNodes, count + 10);
-        }
-
-        query.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ImageModel wallpapaer = dataSnapshot.getValue(ImageModel.class);
-                try {
-                    if (wallpapaer.getS() != null) {
-                        wallpapaer.setUid(dataSnapshot.getKey());
-                        wallpaperList.add(0, wallpapaer);
-                        adapter.notifyDataSetChanged();
-                        Paper.book().write(FirebaseInfo.lastNodeFetched, dataSnapshot.getKey());
-                        a++;
-                        if (a % 10 == 0) {
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
-                    }
-
-                } catch (Exception e) {
-
-                }
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    public void fabButton() {
-
-        final ImageView fabIconNew = new ImageView(this);
-        fabIconNew.setImageDrawable(getResources().getDrawable(R.drawable.ic_plus));
-        final FloatingActionButton rightLowerButton = new FloatingActionButton.Builder(this)
-                .setContentView(fabIconNew)
-                .setPosition(FloatingActionButton.POSITION_BOTTOM_CENTER)
-                .build();
-
-        SubActionButton.Builder rLSubBuilder = new SubActionButton.Builder(this);
-        ImageView rlIcon1 = new ImageView(this);
-        ImageView rlIcon2 = new ImageView(this);
-        ImageView rlIcon3 = new ImageView(this);
-
-
-        rlIcon1.setImageDrawable(getResources().getDrawable(R.drawable.ic_credits));
-        rlIcon2.setImageDrawable(getResources().getDrawable(R.drawable.ic_like));
-        rlIcon3.setImageDrawable(getResources().getDrawable(R.drawable.ic_share));
-
-        // Build the menu with default options: light theme, 90 degrees, 72dp radius.
-        // Set 4 default SubActionButtons
-        rightLowerMenu = new FloatingActionMenu.Builder(this)
-                .addSubActionView(rLSubBuilder.setContentView(rlIcon1).build())
-                .addSubActionView(rLSubBuilder.setContentView(rlIcon2).build())
-                .addSubActionView(rLSubBuilder.setContentView(rlIcon3).build())
-                .attachTo(rightLowerButton)
-                .setStartAngle(200)
-                .setEndAngle(340)
-                .build();
-
-        rlIcon1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Credits Wilferd - under build", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        rlIcon2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Saved WallPapers - under build", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(MainActivity.this,LikedBoard.class);
-                startActivity(intent);
-            }
-        });
-
-        rlIcon3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Share! - under build", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-        // Listen menu open and close events to animate the button content view
-        rightLowerMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
-            @Override
-            public void onMenuOpened(FloatingActionMenu menu) {
-                // Rotate the icon of rightLowerButton 45 degrees clockwise
-                fabIconNew.setRotation(0);
-                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 45);
-                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(fabIconNew, pvhR);
-                animation.start();
-            }
-
-            @Override
-            public void onMenuClosed(FloatingActionMenu menu) {
-                // Rotate the icon of rightLowerButton 45 degrees counter-clockwise
-                fabIconNew.setRotation(45);
-                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
-                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(fabIconNew, pvhR);
-                animation.start();
-            }
-        });
-
-
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -409,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Toast.makeText(MainActivity.this, "About us under build", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LikedBoard.this, "About us under build", Toast.LENGTH_SHORT).show();
             return true;
         }
 
@@ -442,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 if (imageLoaded) {
                     setWallpaper();
                 } else {
-                    Toast.makeText(MainActivity.this, "Image Loading", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LikedBoard.this, "Image Loading", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -450,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         setAsWallPaperButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Toast.makeText(MainActivity.this, "Set as Wallpaper", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LikedBoard.this, "Set as Wallpaper", Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
@@ -502,8 +341,8 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                     + " " + Build.MODEL + " " + Build.VERSION.RELEASE
                     + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
             FirebaseDataBaseCheck.getDatabase().getReference().child("Logs").push().setValue(System.currentTimeMillis() + "  " + reqString + " " + e);
-            Toast.makeText(MainActivity.this, "Error setting Wallpaper", Toast.LENGTH_SHORT).show();
-            Toast.makeText(MainActivity.this, "sorry for incontinence our developers will fix this issue soon", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LikedBoard.this, "Error setting Wallpaper", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LikedBoard.this, "sorry for incontinence our developers will fix this issue soon", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -515,10 +354,10 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
 }
 
-class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+class SpacesPaddingItemDecoration extends RecyclerView.ItemDecoration {
     private int space;
 
-    public SpacesItemDecoration(int space) {
+    public SpacesPaddingItemDecoration(int space) {
         this.space = space;
     }
 
@@ -531,4 +370,6 @@ class SpacesItemDecoration extends RecyclerView.ItemDecoration {
 
     }
 }
+
+
 
