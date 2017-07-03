@@ -29,9 +29,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
 
     private List<ImageModel> imageList;
     private Context activity;
-
     private ImageAdapterCallback callback;
-
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView image, like;
@@ -40,12 +38,9 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
             super(view);
             image = (ImageView) view.findViewById(R.id.image);
             like = (ImageView) view.findViewById(R.id.likeButton);
-
             like.setOnClickListener(this);
             image.setOnClickListener(this);
-
         }
-
         @Override
         public void onClick(View v) {
             if (v.getId() == like.getId()) {
@@ -103,6 +98,9 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
             if(likedStringList.contains(mImageModel.getUid())){
                 holder.like.setImageResource(R.drawable.ic_action_like);
                 holder.like.setTag("like");
+            }else{
+                holder.like.setImageResource(R.drawable.ic_action_unlike);
+                holder.like.setTag("unlike");
             }
     }
 
