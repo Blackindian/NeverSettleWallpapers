@@ -115,11 +115,12 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
 
 
         setSupportActionBar(toolbar);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("");
         actionBar.setHomeAsUpIndicator(R.drawable.ic_action_back);
-        actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
 
         blurWorker = Dali.create(LikedBoard.this).liveBlur(parentLayout, blurview).downScale(8).assemble(true);
@@ -250,9 +251,17 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
         if (id == R.id.action_settings) {
             Toast.makeText(LikedBoard.this, "About us under build", Toast.LENGTH_SHORT).show();
             return true;
+        }else if(id == R.id.home){
+            onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 
     private AlertDialog.Builder wallPaperPromt() {
