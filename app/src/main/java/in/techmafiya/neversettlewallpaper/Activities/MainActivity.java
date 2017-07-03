@@ -54,6 +54,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
@@ -196,31 +198,50 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
         GetDisplaySize();
         placeholderImage.setImageDrawable(previewImage);
-        Glide.with(MainActivity.this).
-                load(wallpaperList.get(position).getF())
-                .asBitmap()
-                .listener(new RequestListener<String, Bitmap>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
-                        return false;
-                    }
 
+
+        Ion.with(MainActivity.this)
+                .load(wallpaperList.get(position).getF())
+                .asBitmap()
+                .setCallback(new FutureCallback<Bitmap>() {
                     @Override
-                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public void onCompleted(Exception e, Bitmap result) {
                         imageLoaded = true;
+                        imageForPromt.setImageBitmap(result);
                         indeterminatProgressBar.setVisibility(View.GONE);
                         placeholderImage.setVisibility(View.GONE);
                         setAsWallPaperButton.setVisibility(View.VISIBLE);
-                        bitmap = resource;
+                        bitmap = result;
                         if (setImage) {
                             setWallpaper();
                         }
-                        return false;
                     }
-                })
-                .into(imageForPromt);
+                });
 
-
+//        Glide.with(MainActivity.this).
+//                load(wallpaperList.get(position).getF())
+//                .asBitmap()
+//                .fitCenter()
+//                .listener(new RequestListener<String, Bitmap>() {
+//                    @Override
+//                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+//                        imageLoaded = true;
+//                        indeterminatProgressBar.setVisibility(View.GONE);
+//                        placeholderImage.setVisibility(View.GONE);
+//                        setAsWallPaperButton.setVisibility(View.VISIBLE);
+//                        bitmap = resource;
+//                        if (setImage) {
+//                            setWallpaper();
+//                        }
+//                        return false;
+//                    }
+//                })
+//                .into(imageForPromt);
 
         mWallpaperDialog
                 .setCancelable(true)
@@ -355,7 +376,9 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         rlIcon2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Saved WallPapers - under build", Toast.LENGTH_SHORT).show();
+                if(rightLowerMenu.isOpen()){
+                    rightLowerMenu.close(true);
+                }
                 Intent intent = new Intent(MainActivity.this,LikedBoard.class);
                 startActivity(intent);
             }

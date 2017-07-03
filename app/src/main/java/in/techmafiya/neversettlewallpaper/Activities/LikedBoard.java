@@ -117,6 +117,9 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("");
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_action_back);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
 
         blurWorker = Dali.create(LikedBoard.this).liveBlur(parentLayout, blurview).downScale(8).assemble(true);
@@ -124,10 +127,7 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
         blurWorker.updateBlurView();
         blurWorker1.updateBlurView();
 
-
-
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
 
         if (Build.VERSION.SDK_INT > 22) {
             recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +102,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
                 .load(mImageModel.getS())
                 .placeholder(R.drawable.placeholder1)
                 .thumbnail(0.1f)
+                .fitCenter()
                 .into(holder.image);
 
         List<String> likedStringList = new ArrayList<>();
