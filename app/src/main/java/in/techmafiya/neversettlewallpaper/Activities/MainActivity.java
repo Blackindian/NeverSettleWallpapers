@@ -119,9 +119,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
-
     }
-
 
     void initUiElements() {
 

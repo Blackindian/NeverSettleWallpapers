@@ -46,10 +46,16 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
         @Override
         public void onClick(View v) {
             if (v.getId() == like.getId()) {
-//            Toast.makeText(v.getContext(), "ITEM PRESSED = " + String.valueOf(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                if("unlike".equals(like.getTag())){
+
+                    like.setImageResource(R.drawable.ic_like);
+                    like.setTag("like");
+                }else if("like".equals(like.getTag())){
+                    like.setImageResource(R.drawable.like_hollow);
+                    like.setTag("unlike");
+                }
 
                 like.setImageResource(R.drawable.ic_like);
-//                like.setImageResource(R.drawable.ic_like);
             }else
                 if(v.getId() == image.getId()){
                     if(callback != null) {
