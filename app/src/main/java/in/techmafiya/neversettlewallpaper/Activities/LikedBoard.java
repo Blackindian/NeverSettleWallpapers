@@ -121,6 +121,7 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
         actionBar.setHomeAsUpIndicator(R.drawable.ic_action_back);
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
 
 
         blurWorker = Dali.create(LikedBoard.this).liveBlur(parentLayout, blurview).downScale(8).assemble(true);
@@ -236,7 +237,7 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+//        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
@@ -245,14 +246,9 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Toast.makeText(LikedBoard.this, "About us under build", Toast.LENGTH_SHORT).show();
-            return true;
-        }else if(id == R.id.home){
-            onBackPressed();
+        switch (item.getItemId()){
+            case android.R.id.home : onBackPressed();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
