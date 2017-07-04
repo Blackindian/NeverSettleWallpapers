@@ -409,8 +409,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 animation.start();
             }
         });
-
-
     }
 
     @Override

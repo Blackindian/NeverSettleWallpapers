@@ -6,16 +6,5 @@
     android:layout_height="match_parent"
     tools:context="in.techmafiya.neversettlewallpaper.Activities.SplashActivity">
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Click me to set wallpaper!"
-        android:clickable="true"
-        android:padding="10dp"
-        android:textColor="#fff"
-        android:textSize="17sp"
-        android:background="@color/colorAccent"
-         />
 
 </LinearLayout>

@@ -21,7 +21,7 @@
         <ImageView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/oneplus_white"
+            android:src="@drawable/neversettlelogo"
             android:paddingRight="5dp"/>
         <TextView
             android:id="@+id/toolbarTV"

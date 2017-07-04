@@ -1,6 +1,7 @@
 package in.techmafiya.neversettlewallpaper.Activities;
 
 import android.app.WallpaperManager;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
@@ -11,50 +12,56 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseDataBaseCheck;
 import in.techmafiya.neversettlewallpaper.Permission.MarshMallowPermission;
 import in.techmafiya.neversettlewallpaper.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
-    TextView textView;
+    protected boolean _active = true;
+    protected int _splashTime = 1000; // time to display the splash screen in ms
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        initMarshmallowPermission();
-        textView = (TextView ) findViewById(R.id.textView1);
 
-        textView.setOnClickListener(new View.OnClickListener() {
+
+        FirebaseDataBaseCheck.getDatabase();
+
+
+
+        Thread splashTread = new Thread() {
             @Override
-            public void onClick(View v) {
-                WallpaperManager myWallpaperManager
-                        = WallpaperManager.getInstance(getApplicationContext());
+            public void run() {
                 try {
+                    int waited = 0;
+                    while (_active && (waited < _splashTime)) {
+                        sleep(100);
+                        if (_active) {
+                            waited += 100;
+                            if(waited>_splashTime-200)
+                            {
 
-                    if(marshMallowPermission.checkPermissionForWallpaper()){
-                        Bitmap bitmap = BitmapFactory.decodeResource(SplashActivity.this.getResources(), R.drawable.placeholder);
-                        myWallpaperManager.setBitmap(bitmap);
-                        Toast.makeText(SplashActivity.this,"Wall paper changed ",Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
+                } catch (Exception e) {
 
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                } finally {                    {
+
+                    startActivity(new Intent(SplashActivity.this,
+                            MainActivity.class));}
+
+                    finish();
                 }
-            }
-        });
+            };
+        };
 
+        splashTread.start();
     }
 
-    void initMarshmallowPermission() {
 
-
-        if (!marshMallowPermission.checkPermissionForWallpaper()) {
-            marshMallowPermission.requestPermissionForWallpaper();
-        }
-
-    }
 
 }
