@@ -19,8 +19,10 @@
         local:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <ImageView
+            android:id="@+id/logo"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:transitionName="logo"
             android:src="@drawable/neversettlelogo"
             android:paddingRight="5dp"/>
         <TextView

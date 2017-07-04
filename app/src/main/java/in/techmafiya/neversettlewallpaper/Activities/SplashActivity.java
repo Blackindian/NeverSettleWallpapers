@@ -4,6 +4,7 @@ import android.app.WallpaperManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +17,9 @@ import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseDataBaseCheck;
 import in.techmafiya.neversettlewallpaper.Permission.MarshMallowPermission;
 import in.techmafiya.neversettlewallpaper.R;
 
+import static in.techmafiya.neversettlewallpaper.R.id.contact;
+import static in.techmafiya.neversettlewallpaper.R.id.logo;
+
 public class SplashActivity extends AppCompatActivity {
 
     protected boolean _active = true;
@@ -25,7 +29,6 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
 
 
         FirebaseDataBaseCheck.getDatabase();
@@ -51,8 +54,13 @@ public class SplashActivity extends AppCompatActivity {
 
                 } finally {                    {
 
-                    startActivity(new Intent(SplashActivity.this,
-                            MainActivity.class));}
+                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+// Pass data object in the bundle and populate details activity.
+                    View logo = findViewById(R.id.logo);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(SplashActivity.this, logo, "logo");
+                    startActivity(intent, options.toBundle());
+                }
 
                     finish();
                 }

@@ -4,7 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context="in.techmafiya.neversettlewallpaper.Activities.SplashActivity">
 
-
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_margin="20dp"
+        android:padding="5dp"
+        android:transitionName="logo"
+        android:src="@drawable/neversettlelogo"
+        android:layout_gravity="center"/>
 </LinearLayout>
