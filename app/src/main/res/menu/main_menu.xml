@@ -6,8 +6,8 @@
 
 
     <item
-        android:id="@+id/action_settings"
-        android:title="About Us"
+        android:id="@+id/action_credits"
+        android:title="Credits"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>

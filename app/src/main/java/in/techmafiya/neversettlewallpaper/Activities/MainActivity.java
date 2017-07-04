@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-
         if (Build.VERSION.SDK_INT > 22) {
             recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
                 @Override
@@ -182,8 +181,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 }
             });
         }
-
-
     }
 
     public void listViewCallingMethods(int position, Drawable previewImage) {
@@ -200,48 +197,48 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         placeholderImage.setImageDrawable(previewImage);
 
 
-        Ion.with(MainActivity.this)
-                .load(wallpaperList.get(position).getF())
-                .asBitmap()
-                .setCallback(new FutureCallback<Bitmap>() {
-                    @Override
-                    public void onCompleted(Exception e, Bitmap result) {
-                        imageLoaded = true;
-                        imageForPromt.setImageBitmap(result);
-                        indeterminatProgressBar.setVisibility(View.GONE);
-                        placeholderImage.setVisibility(View.GONE);
-                        setAsWallPaperButton.setVisibility(View.VISIBLE);
-                        bitmap = result;
-                        if (setImage) {
-                            setWallpaper();
-                        }
-                    }
-                });
-
-//        Glide.with(MainActivity.this).
-//                load(wallpaperList.get(position).getF())
+//        Ion.with(MainActivity.this)
+//                .load(wallpaperList.get(position).getF())
 //                .asBitmap()
-//                .fitCenter()
-//                .listener(new RequestListener<String, Bitmap>() {
+//                .setCallback(new FutureCallback<Bitmap>() {
 //                    @Override
-//                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
-//                        return false;
-//                    }
-//
-//                    @Override
-//                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+//                    public void onCompleted(Exception e, Bitmap result) {
 //                        imageLoaded = true;
+//                        imageForPromt.setImageBitmap(result);
 //                        indeterminatProgressBar.setVisibility(View.GONE);
 //                        placeholderImage.setVisibility(View.GONE);
 //                        setAsWallPaperButton.setVisibility(View.VISIBLE);
-//                        bitmap = resource;
+//                        bitmap = result;
 //                        if (setImage) {
 //                            setWallpaper();
 //                        }
-//                        return false;
 //                    }
-//                })
-//                .into(imageForPromt);
+//                });
+
+        Glide.with(MainActivity.this).
+                load(wallpaperList.get(position).getF())
+                .asBitmap()
+                .fitCenter()
+                .listener(new RequestListener<String, Bitmap>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        imageLoaded = true;
+                        indeterminatProgressBar.setVisibility(View.GONE);
+                        placeholderImage.setVisibility(View.GONE);
+                        setAsWallPaperButton.setVisibility(View.VISIBLE);
+                        bitmap = resource;
+                        if (setImage) {
+                            setWallpaper();
+                        }
+                        return false;
+                    }
+                })
+                .into(imageForPromt);
 
         mWallpaperDialog
                 .setCancelable(true)
@@ -368,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         rlIcon1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Credits Wilferd - under build", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Credits - photos by Unsplash", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -431,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_credits) {
             Toast.makeText(MainActivity.this, "About us under build", Toast.LENGTH_SHORT).show();
             return true;
         }
