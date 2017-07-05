@@ -116,8 +116,27 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         adapter = new ImagesAdapter(MainActivity.this, wallpaperList);
         adapter.setCallback(this);
         UpdateFromDatabase();
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+        final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount        = mLayoutManager.getChildCount();
+                int totalItemCount          = mLayoutManager.getItemCount();
+//                int firstVisibleItemPosition= mLayoutManager.get;
+//
+//                // Load more if we have reach the end to the recyclerView
+//                if ( (visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
+//
+//                }
+            }
+        });
         recyclerView.setHasFixedSize(false);
         recyclerView.addItemDecoration(new SpacesItemDecoration(10));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -164,6 +183,8 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         });
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
+
 
         if (Build.VERSION.SDK_INT > 22) {
             recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
@@ -283,21 +304,22 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     public void UpdateFromDatabase() {
         blurWorker.updateBlurView();
         Query query;
-        if (firstCheck == false) {
-            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(Paper.book().read(FirebaseInfo.howManyNodes+10, 10));
-            if (Paper.book().read(FirebaseInfo.howManyNodes, 0) == 0) {
-                Paper.book().write(FirebaseInfo.howManyNodes, 10);
-            }else {
-                Paper.book().write(FirebaseInfo.howManyNodes, Paper.book().read(FirebaseInfo.howManyNodes,10)+10);
-            }
-            firstCheck = true;
-        } else if (Paper.book().read(FirebaseInfo.lastNodeFetched, "").equals("")) {
-            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(10);
-        } else {
-            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByKey().startAt(Paper.book().read(FirebaseInfo.lastNodeFetched, "") + 1).limitToFirst(6);
-            int count = Paper.book().read(FirebaseInfo.howManyNodes, 0);
-            Paper.book().write(FirebaseInfo.howManyNodes, count + 6);
-        }
+        query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByChild("likes");
+//        if (firstCheck == false) {
+//            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(Paper.book().read(FirebaseInfo.howManyNodes+10, 10));
+//            if (Paper.book().read(FirebaseInfo.howManyNodes, 0) == 0) {
+//                Paper.book().write(FirebaseInfo.howManyNodes, 10);
+//            }else {
+//                Paper.book().write(FirebaseInfo.howManyNodes, Paper.book().read(FirebaseInfo.howManyNodes,10)+10);
+//            }
+//            firstCheck = true;
+//        }
+//        else {
+//            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByKey().startAt(Paper.book().read(FirebaseInfo.lastNodeFetched, "") + 1).limitToFirst(10);
+//            int count = Paper.book().read(FirebaseInfo.howManyNodes, 0);
+//            Paper.book().write(FirebaseInfo.howManyNodes, count + 10);
+//
+//        }
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -555,6 +577,7 @@ class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         outRect.left = space;
         outRect.right = space;
         outRect.bottom = space;
+        outRect.top = space;
 
     }
 }
