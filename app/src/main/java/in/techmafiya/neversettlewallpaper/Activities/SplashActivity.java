@@ -59,33 +59,34 @@ public class SplashActivity extends AppCompatActivity {
         }
 
 
-//        Thread splashTread = new Thread() {
-//            @Override
-//            public void run() {
-//                try {
-//                    int waited = 0;
-//                    while (_active && (waited < _splashTime)) {
-//                        sleep(100);
-//                        if (_active) {
-//                            waited += 100;
-//                            if(waited>_splashTime-200)
-//                            {
-//
-//                            }
-//                        }
-//                    }
-//                } catch (Exception e) {
-//
-//                } finally {                    {
-//
-//                    startIntent();
-//                }
-//                    finish();
-//                }
-//            };
-//        };
-//
-//        splashTread.start();
+        Thread splashTread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    int waited = 0;
+                    while (_active && (waited < _splashTime)) {
+                        sleep(100);
+                        if (_active) {
+                            waited += 100;
+                            if(waited>_splashTime-200)
+                            {
+
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+
+                } finally {                    {
+
+                    Intent intent = new Intent(SplashActivity.this,MainActivity.class);
+                    startActivity(intent);
+                }
+                    finish();
+                }
+            };
+        };
+
+        splashTread.start();
     }
 
     public void startIntent(){
