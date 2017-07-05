@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,9 +11,78 @@
         android:id="@+id/logo"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_margin="20dp"
-        android:padding="5dp"
-        android:transitionName="logo"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="15dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:transitionName="@string/activity_image_trans"
         android:src="@drawable/neversettlelogo"
         android:layout_gravity="center"/>
-</LinearLayout>
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/logo"
+        android:gravity="center"
+        android:textSize="17sp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="15dp"
+        android:textColor="#fff"
+        android:text="OnePlus WallPapers"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/progressbar"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:padding="10dp"
+            android:textColor="#fff"
+            android:text="@string/madeby"
+             />
+
+        <ImageView
+            android:id="@+id/oneplus"
+            android:layout_width="22dp"
+            android:layout_height="23dp"
+            android:src="@drawable/white"/>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:padding="10dp"
+            android:textColor="#fff"
+            android:text="@string/madeby"
+            />
+
+
+    </LinearLayout>
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_alignParentBottom="true"
+        app:mpb_progressStyle="horizontal"
+        app:mpb_progressBackgroundTint="@color/colorPrimary"
+        app:mpb_indeterminateTint="#fff"
+        app:mpb_useIntrinsicPadding="false"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal" />
+</RelativeLayout>

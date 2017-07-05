@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initToolBar();
+
         Paper.init(this);
 
         initMarshmallowPermission();
@@ -123,22 +125,28 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
     }
 
-    void initUiElements() {
-
+    void initToolBar(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        parentLayout = (RelativeLayout) findViewById(R.id.blurlayout);
-        blurview = (View) findViewById(R.id.blurView);
-        blurView1 = (View) findViewById(R.id.blurView2);
+
+        View smallImageView = toolbar.findViewById(R.id.logo);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            smallImageView.setTransitionName(getString(R.string.activity_image_trans));
+        }
 
         toolbarTextView = (TextView) toolbar.findViewById(R.id.toolbarTV);
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/Lato-Bold.ttf");
         toolbarTextView.setTypeface(custom_font);
 
-
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("");
 
+    }
+    void initUiElements() {
+
+        parentLayout = (RelativeLayout) findViewById(R.id.blurlayout);
+        blurview = findViewById(R.id.blurView);
+        blurView1 =  findViewById(R.id.blurView2);
 
         blurWorker = Dali.create(MainActivity.this).liveBlur(parentLayout, blurview).downScale(8).assemble(true);
         blurWorker1 = Dali.create(MainActivity.this).liveBlur(parentLayout, blurView1).blurRadius(3).downScale(3).assemble(true);
