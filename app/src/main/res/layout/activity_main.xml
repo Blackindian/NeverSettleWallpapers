@@ -20,7 +20,7 @@
 
         <ImageView
             android:id="@+id/logo"
-            android:layout_width="50dp"
+            android:layout_width="40dp"
             android:layout_height="40dp"
             android:transitionName="@string/activity_image_trans"
             android:src="@drawable/neversettlelogo"
@@ -30,7 +30,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fontFamily="sans-serif"
-            android:gravity="center"
             android:text="One Plus Wallpapers"
             android:textColor="#ffffff"
             android:textSize="18sp" />

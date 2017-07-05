@@ -284,19 +284,20 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         blurWorker.updateBlurView();
         Query query;
         if (firstCheck == false) {
-            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(Paper.book().read(FirebaseInfo.howManyNodes, 10));
+            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(Paper.book().read(FirebaseInfo.howManyNodes+10, 10));
             if (Paper.book().read(FirebaseInfo.howManyNodes, 0) == 0) {
                 Paper.book().write(FirebaseInfo.howManyNodes, 10);
+            }else {
+                Paper.book().write(FirebaseInfo.howManyNodes, Paper.book().read(FirebaseInfo.howManyNodes,10)+10);
             }
             firstCheck = true;
         } else if (Paper.book().read(FirebaseInfo.lastNodeFetched, "").equals("")) {
             query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(10);
         } else {
-            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByKey().startAt(Paper.book().read(FirebaseInfo.lastNodeFetched, "") + 1).limitToFirst(10);
+            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByKey().startAt(Paper.book().read(FirebaseInfo.lastNodeFetched, "") + 1).limitToFirst(6);
             int count = Paper.book().read(FirebaseInfo.howManyNodes, 0);
-            Paper.book().write(FirebaseInfo.howManyNodes, count + 10);
+            Paper.book().write(FirebaseInfo.howManyNodes, count + 6);
         }
-
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -308,11 +309,11 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                         adapter.notifyDataSetChanged();
                         Paper.book().write(FirebaseInfo.lastNodeFetched, dataSnapshot.getKey());
                         a++;
+                        mSwipeRefreshLayout.setRefreshing(false);
                         if (a % 10 == 0) {
                             mSwipeRefreshLayout.setRefreshing(false);
                         }
                     }
-
                 } catch (Exception e) {
 
                 }
