@@ -51,6 +51,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     //blur views
     compile 'at.favre.lib:dali:0.3.4'
+    //explosive
+    compile 'tyrantgit:explosionfield:1.0.1'
     testCompile 'junit:junit:4.12'
 }
 

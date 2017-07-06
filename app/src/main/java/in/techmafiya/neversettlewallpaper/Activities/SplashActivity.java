@@ -6,12 +6,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +24,12 @@ import java.io.IOException;
 import in.techmafiya.neversettlewallpaper.FirebaseInfo.FirebaseDataBaseCheck;
 import in.techmafiya.neversettlewallpaper.Permission.MarshMallowPermission;
 import in.techmafiya.neversettlewallpaper.R;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
+import tyrantgit.explosionfield.ExplosionField;
 
 import static in.techmafiya.neversettlewallpaper.R.id.contact;
 import static in.techmafiya.neversettlewallpaper.R.id.logo;
+import static in.techmafiya.neversettlewallpaper.R.id.progressbar;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -31,16 +38,21 @@ public class SplashActivity extends AppCompatActivity {
 
 
     View imageView;
-    ActivityOptionsCompat options;
-
+    private ExplosionField mExplosionField;
+    LinearLayout layout;
+    MaterialProgressBar mpb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        mExplosionField = ExplosionField.attach2Window(this);
+        layout = (LinearLayout) findViewById(R.id.linearlayout);
+        mpb = (MaterialProgressBar) findViewById(R.id.progressbar);
         TextView textView = (TextView) findViewById(R.id.textView);
         TextView textView1 = (TextView) findViewById(R.id.textView1);
         TextView textView2 = (TextView) findViewById(R.id.textView2);
+
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/Lato-Bold.ttf");
         textView.setText("-By ");
         textView2.setText(" Fan ");
@@ -50,14 +62,16 @@ public class SplashActivity extends AppCompatActivity {
 
         FirebaseDataBaseCheck.getDatabase();
         imageView= findViewById(R.id.logo);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Pair<View, String> pair1 = Pair.create(imageView, imageView.getTransitionName());
 
-            options = ActivityOptionsCompat.
-                    makeSceneTransitionAnimation(SplashActivity.this, pair1);
-
-        }
-
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after 100ms
+                mExplosionField.explode(layout);
+                mExplosionField.explode(mpb);
+            }
+        }, 2000);
 
         Thread splashTread = new Thread() {
             @Override
@@ -65,10 +79,10 @@ public class SplashActivity extends AppCompatActivity {
                 try {
                     int waited = 0;
                     while (_active && (waited < _splashTime)) {
-                        sleep(100);
+                        sleep(1000);
                         if (_active) {
-                            waited += 100;
-                            if(waited>_splashTime-200)
+                            waited += 1000;
+                            if(waited>_splashTime-1000)
                             {
 
                             }
@@ -89,23 +103,6 @@ public class SplashActivity extends AppCompatActivity {
         splashTread.start();
     }
 
-    public void startIntent(){
-
-
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            Pair<View, String> pair1 = Pair.create(imageView, imageView.getTransitionName());
-//
-//            ActivityOptionsCompat options = ActivityOptionsCompat.
-//                    makeSceneTransitionAnimation(SplashActivity.this, pair1);
-            startActivity(intent, options.toBundle());
-
-        }
-        else {
-            startActivity(intent);
-        }
-    }
 
 
 }

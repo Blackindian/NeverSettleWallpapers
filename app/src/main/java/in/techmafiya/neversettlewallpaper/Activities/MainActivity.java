@@ -24,6 +24,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 
@@ -38,6 +39,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -77,6 +79,7 @@ import in.techmafiya.neversettlewallpaper.Models.ImageModel;
 import in.techmafiya.neversettlewallpaper.R;
 import io.paperdb.Paper;
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
+import tyrantgit.explosionfield.ExplosionField;
 
 public class MainActivity extends AppCompatActivity implements ImagesAdapter.ImageAdapterCallback {
 
@@ -97,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     private RecyclerView recyclerView;
     public FloatingActionMenu rightLowerMenu;
     public  Typeface custom_font;
+    private ExplosionField mExplosionField;
+    private CardView cardView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         initToolBar();
 
         Paper.init(this);
+        mExplosionField = ExplosionField.attach2Window(this);
 
         initMarshmallowPermission();
 
@@ -135,7 +141,10 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
                 // Load more if we have reach the end to the recyclerView
                 if ( (visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
-                    Toast.makeText(MainActivity.this,"Last Item Visible",Toast.LENGTH_SHORT).show();
+                    cardView.setVisibility(View.VISIBLE);
+                }else {
+                    cardView.setVisibility(View.GONE);
+                    reset(cardView);
                 }
             }
         });
@@ -167,6 +176,16 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         loadmoreTextView = (TextView) findViewById(R.id.loadmore);
         loadmoreTextView.setTypeface(custom_font);
 
+        cardView = (CardView) findViewById(R.id.card);
+        cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.scrollToPosition(0);
+                mExplosionField.explode(v);
+                cardView.setVisibility(View.GONE);
+            }
+        });
+
         parentLayout = (RelativeLayout) findViewById(R.id.blurlayout);
         blurview = findViewById(R.id.blurView);
         blurView1 =  findViewById(R.id.blurView2);
@@ -176,15 +195,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         blurWorker.updateBlurView();
         blurWorker1.updateBlurView();
 
-//        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
-//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
-//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                mSwipeRefreshLayout.setRefreshing(true);
-//                UpdateFromDatabase();
-//            }
-//        });
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
@@ -557,6 +567,12 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
             Toast.makeText(MainActivity.this, "Error setting Wallpaper", Toast.LENGTH_SHORT).show();
             Toast.makeText(MainActivity.this, "sorry for incontinence our developers will fix this issue soon", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void reset(View root) {
+            root.setScaleX(1);
+            root.setScaleY(1);
+            root.setAlpha(1);
     }
 
     @Override

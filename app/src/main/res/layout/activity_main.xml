@@ -23,7 +23,6 @@
             android:id="@+id/logo"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:transitionName="@string/activity_image_trans"
             android:src="@drawable/neversettlelogo"
             android:paddingRight="5dp"/>
         <TextView
@@ -42,38 +41,37 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefresh"
-        android:layout_below="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
 
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="15dp"
             android:paddingBottom="60dp"
             android:clipToPadding="false"
             android:scrollbars="vertical" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+
 
     <android.support.v7.widget.CardView
+        android:id="@+id/card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:elevation="20dp"
+        android:elevation="40dp"
+        android:visibility="gone"
         app:cardCornerRadius="10dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="100dp"
         android:layout_centerHorizontal="true">
         <TextView
             android:id="@+id/loadmore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Load More"
+            android:text="Go to Top"
             android:padding="5dp"
             android:textColor="#fff"
             android:background="@color/colorPrimary"
