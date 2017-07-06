@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     private MaterialProgressBar indeterminatProgressBar;
     boolean imageLoaded = false, setImage = false;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private TextView toolbarTextView;
+    private TextView toolbarTextView,loadmoreTextView;
     private int a = 0, height, width, positionMain;
     private RelativeLayout parentLayout;
     private View blurview, blurView1;
@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     private Bitmap bitmap;
     private RecyclerView recyclerView;
     public FloatingActionMenu rightLowerMenu;
+    public  Typeface custom_font;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +117,8 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         adapter = new ImagesAdapter(MainActivity.this, wallpaperList);
         adapter.setCallback(this);
         UpdateFromDatabase();
-        final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+//        final RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
+        final GridLayoutManager mLayoutManager = new GridLayoutManager(getApplicationContext(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -129,19 +131,18 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 super.onScrolled(recyclerView, dx, dy);
                 int visibleItemCount        = mLayoutManager.getChildCount();
                 int totalItemCount          = mLayoutManager.getItemCount();
-//                int firstVisibleItemPosition= mLayoutManager.get;
-//
-//                // Load more if we have reach the end to the recyclerView
-//                if ( (visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
-//
-//                }
+                int firstVisibleItemPosition= mLayoutManager.findLastVisibleItemPosition();
+
+                // Load more if we have reach the end to the recyclerView
+                if ( (visibleItemCount + firstVisibleItemPosition) >= totalItemCount && firstVisibleItemPosition >= 0) {
+                    Toast.makeText(MainActivity.this,"Last Item Visible",Toast.LENGTH_SHORT).show();
+                }
             }
         });
         recyclerView.setHasFixedSize(false);
         recyclerView.addItemDecoration(new SpacesItemDecoration(10));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-
     }
 
     void initToolBar(){
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         }
 
         toolbarTextView = (TextView) toolbar.findViewById(R.id.toolbarTV);
-        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/Lato-Bold.ttf");
+        custom_font = Typeface.createFromAsset(getAssets(), "fonts/Lato-Bold.ttf");
         toolbarTextView.setTypeface(custom_font);
 
         setSupportActionBar(toolbar);
@@ -162,6 +163,9 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
     }
     void initUiElements() {
+
+        loadmoreTextView = (TextView) findViewById(R.id.loadmore);
+        loadmoreTextView.setTypeface(custom_font);
 
         parentLayout = (RelativeLayout) findViewById(R.id.blurlayout);
         blurview = findViewById(R.id.blurView);
@@ -172,18 +176,17 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         blurWorker.updateBlurView();
         blurWorker1.updateBlurView();
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
-                UpdateFromDatabase();
-            }
-        });
+//        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+//        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark);
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                mSwipeRefreshLayout.setRefreshing(true);
+//                UpdateFromDatabase();
+//            }
+//        });
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
 
 
         if (Build.VERSION.SDK_INT > 22) {
