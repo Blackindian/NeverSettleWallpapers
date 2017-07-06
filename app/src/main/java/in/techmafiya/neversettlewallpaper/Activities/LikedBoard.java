@@ -16,6 +16,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,16 +64,17 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
 
     private LiveBlurWorker blurWorker, blurWorker1;
     private ImagesAdapter adapter;
+    public CardView cardView;
     private boolean firstCheck = false;
     private ArrayList<ImageModel> wallpaperList = new ArrayList<ImageModel>();
     private MaterialProgressBar indeterminatProgressBar;
     boolean imageLoaded = false, setImage = false;
-    private TextView toolbarTextView;
+    private TextView toolbarTextView,noSavedTextView;
     private int a = 0, height, width, positionMain;
     private RelativeLayout parentLayout;
     private View blurview, blurView1;
     private MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
-    private ImageView imageForPromt, setAsWallPaperButton, placeholderImage;
+    private ImageView nosavedImage,imageForPromt, setAsWallPaperButton, placeholderImage;
     private Bitmap bitmap;
     private RecyclerView recyclerView;
     private  List<ImageModel> LikedImageList = new ArrayList<>();
@@ -84,7 +86,6 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
         setContentView(R.layout.activity_liked_board);
 
         Paper.init(this);
-
 
         initMarshmallowPermission();
         InitUiElement();
@@ -129,6 +130,12 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
         blurWorker.updateBlurView();
         blurWorker1.updateBlurView();
 
+        cardView = (CardView) findViewById(R.id.noSavedLayout);
+        nosavedImage = (ImageView ) findViewById(R.id.imageview);
+        noSavedTextView = (TextView) findViewById(R.id.textview);
+
+        noSavedTextView.setTypeface(custom_font);
+
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
         if (Build.VERSION.SDK_INT > 22) {
@@ -157,6 +164,10 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
 
         if(!LikedImageList.isEmpty()){
             for(ImageModel imageModel : LikedImageList){
+                if(firstCheck == false){
+                    firstCheck= true;
+                    cardView.setVisibility(View.GONE);
+                }
                 wallpaperList.add(imageModel);
                 adapter.notifyDataSetChanged();
             }

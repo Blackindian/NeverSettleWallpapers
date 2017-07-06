@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     private RelativeLayout parentLayout;
     private View blurview, blurView1;
     private MarshMallowPermission marshMallowPermission = new MarshMallowPermission(this);
-    private ImageView imageForPromt, setAsWallPaperButton, placeholderImage;
+    private ImageView loading,imageForPromt, setAsWallPaperButton, placeholderImage;
     private Bitmap bitmap;
     private RecyclerView recyclerView;
     public FloatingActionMenu rightLowerMenu;
@@ -173,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     }
     void initUiElements() {
 
+        loading = (ImageView) findViewById(R.id.loading);
+        Glide.with(getApplicationContext()).load(R.drawable.waiting).into(loading);
         loadmoreTextView = (TextView) findViewById(R.id.loadmore);
         loadmoreTextView.setTypeface(custom_font);
 
@@ -195,9 +197,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         blurWorker.updateBlurView();
         blurWorker1.updateBlurView();
 
-
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-
 
         if (Build.VERSION.SDK_INT > 22) {
             recyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
@@ -318,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         blurWorker.updateBlurView();
         Query query;
         query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByChild("likes");
+
 //        if (firstCheck == false) {
 //            query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).limitToFirst(Paper.book().read(FirebaseInfo.howManyNodes+10, 10));
 //            if (Paper.book().read(FirebaseInfo.howManyNodes, 0) == 0) {
@@ -339,6 +340,10 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                 ImageModel wallpapaer = dataSnapshot.getValue(ImageModel.class);
                 try {
                     if (wallpapaer.getS() != null) {
+                        if(firstCheck ==false){
+                            firstCheck=true;
+                            loading.setVisibility(View.GONE);
+                        }
                         wallpapaer.setUid(dataSnapshot.getKey());
                         wallpaperList.add(0, wallpapaer);
                         adapter.notifyDataSetChanged();
