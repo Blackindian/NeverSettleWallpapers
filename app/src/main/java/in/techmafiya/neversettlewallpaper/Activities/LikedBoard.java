@@ -35,13 +35,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.Query;
-import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
-import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
-import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -133,7 +126,6 @@ public class LikedBoard extends AppCompatActivity implements  ImagesAdapter.Imag
         cardView = (CardView) findViewById(R.id.noSavedLayout);
         nosavedImage = (ImageView ) findViewById(R.id.imageview);
         noSavedTextView = (TextView) findViewById(R.id.textview);
-
         noSavedTextView.setTypeface(custom_font);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);

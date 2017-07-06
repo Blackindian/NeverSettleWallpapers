@@ -16,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         android:src="@drawable/placeholder1" />
 
     <ImageView
@@ -23,6 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
         android:src="@drawable/placeholder1" />
 
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar

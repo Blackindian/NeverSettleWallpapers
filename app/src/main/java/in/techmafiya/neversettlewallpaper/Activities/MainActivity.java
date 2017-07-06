@@ -3,27 +3,23 @@ package in.techmafiya.neversettlewallpaper.Activities;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.AlertDialog;
-import android.content.Context;
+
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
+
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.PorterDuff;
+
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
+
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -32,14 +28,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -56,8 +49,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
+
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
@@ -67,7 +59,6 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
-import android.graphics.Bitmap;
 
 import at.favre.lib.dali.Dali;
 import at.favre.lib.dali.builder.live.LiveBlurWorker;
@@ -89,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     private ArrayList<ImageModel> wallpaperList = new ArrayList<ImageModel>();
     private MaterialProgressBar indeterminatProgressBar;
     boolean imageLoaded = false, setImage = false;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView toolbarTextView,loadmoreTextView;
     private int a = 0, height, width, positionMain;
     private RelativeLayout parentLayout;
@@ -175,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
         loading = (ImageView) findViewById(R.id.loading);
         Glide.with(getApplicationContext()).load(R.drawable.waiting).into(loading);
+
         loadmoreTextView = (TextView) findViewById(R.id.loadmore);
         loadmoreTextView.setTypeface(custom_font);
 
@@ -239,28 +230,11 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         placeholderImage.setImageDrawable(previewImage);
 
 
-//        Ion.with(MainActivity.this)
-//                .load(wallpaperList.get(position).getF())
-//                .asBitmap()
-//                .setCallback(new FutureCallback<Bitmap>() {
-//                    @Override
-//                    public void onCompleted(Exception e, Bitmap result) {
-//                        imageLoaded = true;
-//                        imageForPromt.setImageBitmap(result);
-//                        indeterminatProgressBar.setVisibility(View.GONE);
-//                        placeholderImage.setVisibility(View.GONE);
-//                        setAsWallPaperButton.setVisibility(View.VISIBLE);
-//                        bitmap = result;
-//                        if (setImage) {
-//                            setWallpaper();
-//                        }
-//                    }
-//                });
 
         Glide.with(MainActivity.this).
                 load(wallpaperList.get(position).getF())
                 .asBitmap()
-                .fitCenter()
+                .centerCrop()
                 .listener(new RequestListener<String, Bitmap>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
@@ -316,6 +290,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
     public void UpdateFromDatabase() {
         blurWorker.updateBlurView();
+        loading.setVisibility(View.VISIBLE);
         Query query;
         query = FirebaseDataBaseCheck.getDatabase().getReference().child(FirebaseInfo.NodeUsing).orderByChild("likes");
 
@@ -343,16 +318,12 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                         if(firstCheck ==false){
                             firstCheck=true;
                             loading.setVisibility(View.GONE);
+
                         }
                         wallpapaer.setUid(dataSnapshot.getKey());
                         wallpaperList.add(0, wallpapaer);
                         adapter.notifyDataSetChanged();
-                        Paper.book().write(FirebaseInfo.lastNodeFetched, dataSnapshot.getKey());
-                        a++;
-                        mSwipeRefreshLayout.setRefreshing(false);
-                        if (a % 10 == 0) {
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
+//                        Paper.book().write(FirebaseInfo.lastNodeFetched, dataSnapshot.getKey());
                     }
                 } catch (Exception e) {
 
