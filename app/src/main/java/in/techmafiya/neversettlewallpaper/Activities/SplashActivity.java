@@ -12,12 +12,16 @@ import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.io.IOException;
 
@@ -36,15 +40,18 @@ public class SplashActivity extends AppCompatActivity {
     protected boolean _active = true;
     protected int _splashTime = 3000; // time to display the splash screen in ms
 
-
+    public static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     View imageView;
     private ExplosionField mExplosionField;
     LinearLayout layout;
     MaterialProgressBar mpb;
+    String TAG = "Splash";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+
 
         mExplosionField = ExplosionField.attach2Window(this);
         layout = (LinearLayout) findViewById(R.id.linearlayout);
@@ -104,5 +111,20 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.e(TAG, "EL DISPOSITIVO NO SOPORTA GOOGLE PLAY SERVICES");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
 
 }
