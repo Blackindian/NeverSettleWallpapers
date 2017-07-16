@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
                     reset(cardView);
                 }
             }
+
         });
         recyclerView.setHasFixedSize(false);
         recyclerView.addItemDecoration(new SpacesItemDecoration(10));
@@ -228,7 +229,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
 
         GetDisplaySize();
         placeholderImage.setImageDrawable(previewImage);
-
 
 
         Glide.with(MainActivity.this).
@@ -431,28 +431,28 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_credits) {
-            Toast.makeText(MainActivity.this, "About us under build", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main_menu, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_credits) {
+//            Toast.makeText(MainActivity.this, "About us under build", Toast.LENGTH_SHORT).show();
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private AlertDialog.Builder wallPaperPromt() {
         LayoutInflater li = LayoutInflater.from(this);
