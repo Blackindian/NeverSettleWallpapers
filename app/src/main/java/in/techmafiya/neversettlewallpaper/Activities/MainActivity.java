@@ -528,7 +528,6 @@ public class MainActivity extends AppCompatActivity implements ImagesAdapter.Ima
     public void setWallpaper() {
         try {
             imageForPromt.buildDrawingCache();
-
             Intent intent = new Intent(Intent.ACTION_ATTACH_DATA);
             intent.setDataAndType(SaveImage(bitmap), "image/png");
             intent.putExtra("mimeType", "image/png");
