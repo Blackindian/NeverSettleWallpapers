@@ -34,7 +34,7 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView image, like;
 
-        public MyViewHolder(View view) {
+        public MyViewHolder(View view)  {
             super(view);
             image = (ImageView) view.findViewById(R.id.image);
             like = (ImageView) view.findViewById(R.id.likeButton);

@@ -46,11 +46,11 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:10.2.6'
     //progress bar
     compile 'me.zhanghai.android.materialprogressbar:library:1.4.1'
-
+    compile 'tyrantgit:explosionfield:1.0.1'
     //blur views
     compile 'at.favre.lib:dali:0.3.4'
     //explosive
-    compile 'tyrantgit:explosionfield:1.0.1'
+
     testCompile 'junit:junit:4.12'
 }
 
