@@ -1,6 +1,6 @@
 #NeverSettleWallPapers
 
-Settle WallPapers APP for OnePlus fans by OnePlus Fan
+NeverSettle WallPapers APP for OnePlus fans by OnePlus Fan
 
 API and Technology Used : 
 
